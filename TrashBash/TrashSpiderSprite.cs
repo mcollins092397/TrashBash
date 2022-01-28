@@ -72,7 +72,7 @@ namespace TrashBash
         {
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (animationTimer > 0.3)
+            if (animationTimer > .1)
             {
                 animationFrame++;
                 
@@ -81,7 +81,7 @@ namespace TrashBash
                     animationFrame = 0;
                 }
 
-                animationTimer -= 0.3;
+                animationTimer -= 0.1;
             }
 
 
