@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using TrashBash.Collisions;
 
 namespace TrashBash
 {
@@ -25,7 +26,7 @@ namespace TrashBash
 
         private Texture2D texture;
 
-        private Vector2 position = new Vector2(200, 200);
+        public Vector2 Position;
 
         private double animationTimer;
 
@@ -35,6 +36,27 @@ namespace TrashBash
 
         public Direction Direction = Direction.Idle;
 
+        private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 12, 200), 40, 64);
+
+
+        /// <summary>
+        /// bounding volume of the sprite
+        /// </summary>
+        public BoundingRectangle Bounds
+        {
+            get
+            {
+                return bounds;
+            }
+        }
+
+
+        /// <summary>
+        /// color blend of the player
+        /// </summary>
+        public Color Color { get; set; } = Color.White;
+
+
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("DudeBro");
@@ -42,37 +64,68 @@ namespace TrashBash
 
         public void Update(GameTime gameTime)
         {
+            //gamePadState = GamePad.GetState(PlayerIndex.One);
             keyboardState = Keyboard.GetState();
             //Keyboard Movement
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                position += new Vector2(0, -1);
+                Position += new Vector2(0, -1);
                 Direction = Direction.Up;
-                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                position += new Vector2(0, 1);
+                Position += new Vector2(0, 1);
                 Direction = Direction.Down;
-                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                position += new Vector2(1, 0);
+                Position += new Vector2(1, 0);
                 Direction = Direction.Right;
-                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                position += new Vector2(-1, 0);
+                Position += new Vector2(-1, 0);
                 Direction = Direction.Left;
-                sipTimer = 0;
             }
-            if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D))
+
+            //Controller Movement
+            Position += gamePadState.ThumbSticks.Left * new Vector2(1, -1);
+            if (gamePadState.ThumbSticks.Left.Y < -0.1f)
+            {
+                Direction = Direction.Down;
+            }
+            if (gamePadState.ThumbSticks.Left.Y > 0.1f)
+            {
+                Direction = Direction.Up;
+            }
+            if (gamePadState.ThumbSticks.Left.X < -0.1f)
+            {
+                Direction = Direction.Left;
+            }
+            if (gamePadState.ThumbSticks.Left.X > 0.1f)
+            {
+                Direction = Direction.Right;
+            }
+
+
+            //check if both the gamepad and controller are not recieving movement then set to idle if so
+            if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D) && gamePadState.ThumbSticks.Left.Y == 0 && gamePadState.ThumbSticks.Left.X == 0)
             {
                 Direction = Direction.Idle;
             }
-            
+
+            //if the player made a movement reset sip timer
+            if (Direction != (Direction.Idle))
+            {
+                sipTimer = 0;
+            }
+
+
+
+            //update the bounds
+            bounds.X = Position.X + 12;
+            bounds.Y = Position.Y;
+
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -102,7 +155,7 @@ namespace TrashBash
             }
 
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
-            spriteBatch.Draw(texture, position, source, Color.White);
+            spriteBatch.Draw(texture, Position, source, Color);
         }
     }
 }

@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework.Content;
 
 namespace TrashBash
 {
+    /// <summary>
+    /// enum representing the direction the spider is moving
+    /// </summary>
     public enum SpiderDirection
     {
         Left = 0,
@@ -30,15 +33,22 @@ namespace TrashBash
 
         private Texture2D texture;
 
-
+        /// <summary>
+        /// Loads the trash spider texture
+        /// </summary>
+        /// <param name="content"></param>
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("TrashSpiderLeftRight");
         }
 
-
+        /// <summary>
+        /// Update the trash spider
+        /// </summary>
+        /// <param name="gameTime">game time</param>
         public void Update(GameTime gameTime)
         {
+            //Swaps the spider direction from left to right every two seconds
             directionTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             if(directionTimer > 2.0)
@@ -55,7 +65,7 @@ namespace TrashBash
                 directionTimer -= 2.0;
             }
 
-
+            //Move the spider based on the set direction
             switch (Direction)
             {
                 case SpiderDirection.Right:
@@ -68,8 +78,14 @@ namespace TrashBash
         }
 
 
+        /// <summary>
+        /// Draws and animates the trash spider sprite
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            //get spiderss animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             if (animationTimer > .1)
@@ -84,7 +100,7 @@ namespace TrashBash
                 animationTimer -= 0.1;
             }
 
-
+            //draw spider based on what frame it is in
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
             spriteBatch.Draw(texture, Position, source, Color.White);
         }

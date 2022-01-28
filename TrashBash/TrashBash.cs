@@ -13,19 +13,28 @@ namespace TrashBash
 
         private PlayerController player;
 
+        private Texture2D ball;
+
+        private PlayBtn playBtn;
+        private ExitBtn exitBtn;
+
+        private SpriteFont spriteFont;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             trashSpider = new TrashSpiderSprite() { Position = new Vector2(100, 100) };
-            player = new PlayerController();
+            player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
+            playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
+            exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
 
             base.Initialize();
         }
@@ -38,6 +47,11 @@ namespace TrashBash
 
             trashSpider.LoadContent(Content);
             player.LoadContent(Content);
+            playBtn.LoadContent(Content);
+            exitBtn.LoadContent(Content);
+            ball = Content.Load<Texture2D>("ball");
+
+            spriteFont = Content.Load<SpriteFont>("arial");
         }
 
         protected override void Update(GameTime gameTime)
@@ -50,6 +64,17 @@ namespace TrashBash
             trashSpider.Update(gameTime);
             player.Update(gameTime);
 
+            playBtn.Color = Color.White;
+
+            if (player.Bounds.CollidesWith(playBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                playBtn.Color = Color.Black;
+            }
+            if (player.Bounds.CollidesWith(exitBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                Exit();
+            }
+
             base.Update(gameTime);
         }
 
@@ -61,6 +86,9 @@ namespace TrashBash
             _spriteBatch.Begin();
 
             trashSpider.Draw(gameTime, _spriteBatch);
+            playBtn.Draw(gameTime, _spriteBatch);
+            exitBtn.Draw(gameTime, _spriteBatch);
+            _spriteBatch.DrawString(spriteFont, " WASD to Move \nSpace to interact", new Vector2((GraphicsDevice.Viewport.Width /2 - 95), GraphicsDevice.Viewport.Height - 100), Color.White);
             player.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
