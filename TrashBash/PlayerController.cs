@@ -29,6 +29,8 @@ namespace TrashBash
 
         private double animationTimer;
 
+        private double sipTimer;
+
         private short animationFrame = 0;
 
         public Direction Direction = Direction.Idle;
@@ -46,21 +48,25 @@ namespace TrashBash
             {
                 position += new Vector2(0, -1);
                 Direction = Direction.Up;
+                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 position += new Vector2(0, 1);
                 Direction = Direction.Down;
+                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
                 position += new Vector2(1, 0);
                 Direction = Direction.Right;
+                sipTimer = 0;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
                 position += new Vector2(-1, 0);
                 Direction = Direction.Left;
+                sipTimer = 0;
             }
             if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D))
             {
@@ -73,7 +79,19 @@ namespace TrashBash
         {
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (animationTimer >.2)
+            if (Direction == Direction.Idle)
+            {
+                sipTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+
+            if (sipTimer > 5)
+            {
+                animationFrame = 3;
+                sipTimer -= 5;
+                animationTimer -= 0.2;
+            }
+            else if (animationTimer >.2)
             {
                 animationFrame++;
                 if (animationFrame > 2)
@@ -82,7 +100,6 @@ namespace TrashBash
                 }
                 animationTimer -= 0.2;
             }
-
 
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
             spriteBatch.Draw(texture, position, source, Color.White);
