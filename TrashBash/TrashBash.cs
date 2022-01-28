@@ -11,6 +11,8 @@ namespace TrashBash
 
         private TrashSpiderSprite trashSpider;
 
+        private PlayerController player;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -23,7 +25,7 @@ namespace TrashBash
         {
             // TODO: Add your initialization logic here
             trashSpider = new TrashSpiderSprite() { Position = new Vector2(100, 100) };
-
+            player = new PlayerController();
 
             base.Initialize();
         }
@@ -35,6 +37,7 @@ namespace TrashBash
             // TODO: use this.Content to load your game content here
 
             trashSpider.LoadContent(Content);
+            player.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,7 +48,7 @@ namespace TrashBash
             // TODO: Add your update logic here
 
             trashSpider.Update(gameTime);
-
+            player.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -58,7 +61,7 @@ namespace TrashBash
             _spriteBatch.Begin();
 
             trashSpider.Draw(gameTime, _spriteBatch);
-
+            player.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
 

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace TrashBash
 {
-    public enum Direction
+    public enum SpiderDirection
     {
         Left = 0,
         Right = 1
@@ -17,7 +17,7 @@ namespace TrashBash
     public class TrashSpiderSprite
     {
 
-        public Direction Direction = Direction.Right;
+        public SpiderDirection Direction = SpiderDirection.Right;
 
 
         public Vector2 Position;
@@ -45,11 +45,11 @@ namespace TrashBash
             {
                 switch(Direction)
                 {
-                    case Direction.Right:
-                        Direction = Direction.Left;
+                    case SpiderDirection.Right:
+                        Direction = SpiderDirection.Left;
                         break;
-                    case Direction.Left:
-                        Direction = Direction.Right;
+                    case SpiderDirection.Left:
+                        Direction = SpiderDirection.Right;
                         break;
                 }
                 directionTimer -= 2.0;
@@ -58,10 +58,10 @@ namespace TrashBash
 
             switch (Direction)
             {
-                case Direction.Right:
+                case SpiderDirection.Right:
                     Position += new Vector2(1, 0) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     break;
-                case Direction.Left:
+                case SpiderDirection.Left:
                     Position += new Vector2(-1, 0) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     break;
             }
