@@ -93,7 +93,7 @@ namespace TrashBash
             trashSpider.Draw(gameTime, _spriteBatch);
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);
-            _spriteBatch.DrawString(spriteFont, " WASD to Move \nSpace to interact", new Vector2((GraphicsDevice.Viewport.Width /2 - 95), GraphicsDevice.Viewport.Height - 100), Color.White);
+            _spriteBatch.DrawString(spriteFont, "              WASD to Move \n             Space to interact\nEsc or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 190), GraphicsDevice.Viewport.Height - 100), Color.White);
             player.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
