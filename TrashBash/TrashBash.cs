@@ -14,6 +14,8 @@ namespace TrashBash
         private PlayerController player;
 
         private Texture2D ball;
+        private Texture2D title;
+        private Texture2D rat;
 
         private PlayBtn playBtn;
         private ExitBtn exitBtn;
@@ -31,7 +33,7 @@ namespace TrashBash
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            trashSpider = new TrashSpiderSprite() { Position = new Vector2(100, 100) };
+            trashSpider = new TrashSpiderSprite() { Position = new Vector2(400, 192) };
             player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
             exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
@@ -50,7 +52,8 @@ namespace TrashBash
             playBtn.LoadContent(Content);
             exitBtn.LoadContent(Content);
             ball = Content.Load<Texture2D>("ball");
-
+            title = Content.Load<Texture2D>("TrashBash");
+            rat = Content.Load<Texture2D>("Rat");
             spriteFont = Content.Load<SpriteFont>("arial");
         }
 
@@ -68,7 +71,7 @@ namespace TrashBash
 
             if (player.Bounds.CollidesWith(playBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                playBtn.Color = Color.Black;
+                playBtn.Color = Color.Red;
             }
             if (player.Bounds.CollidesWith(exitBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
             {
@@ -85,6 +88,8 @@ namespace TrashBash
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
+            _spriteBatch.Draw(title, new Vector2(30, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
+            _spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);
             trashSpider.Draw(gameTime, _spriteBatch);
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);

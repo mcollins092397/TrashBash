@@ -51,7 +51,7 @@ namespace TrashBash
             //Swaps the spider direction from left to right every two seconds
             directionTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if(directionTimer > 2.0)
+            if(directionTimer > 1.0)
             {
                 switch(Direction)
                 {
@@ -62,7 +62,7 @@ namespace TrashBash
                         Direction = SpiderDirection.Right;
                         break;
                 }
-                directionTimer -= 2.0;
+                directionTimer -= 1.0;
             }
 
             //Move the spider based on the set direction
