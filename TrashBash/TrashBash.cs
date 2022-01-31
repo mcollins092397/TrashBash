@@ -95,6 +95,7 @@ namespace TrashBash
             exitBtn.Draw(gameTime, _spriteBatch);
             _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
             player.Draw(gameTime, _spriteBatch);
+            
 
             _spriteBatch.End();
 

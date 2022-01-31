@@ -36,7 +36,7 @@ namespace TrashBash
 
         public Direction Direction = Direction.Idle;
 
-        private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 12, 200), 40, 64);
+        private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 20, 200), 25, 64);
 
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace TrashBash
 
 
             //update the bounds
-            bounds.X = Position.X + 12;
+            bounds.X = Position.X + 20;
             bounds.Y = Position.Y;
 
         }
