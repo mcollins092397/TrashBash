@@ -64,7 +64,7 @@ namespace TrashBash
 
         public void Update(GameTime gameTime)
         {
-            //gamePadState = GamePad.GetState(PlayerIndex.One);
+            gamePadState = GamePad.GetState(0);
             keyboardState = Keyboard.GetState();
             //Keyboard Movement
             if (keyboardState.IsKeyDown(Keys.W))
@@ -90,22 +90,23 @@ namespace TrashBash
 
             //Controller Movement
             Position += gamePadState.ThumbSticks.Left * new Vector2(1, -1);
-            if (gamePadState.ThumbSticks.Left.Y < -0.1f)
-            {
-                Direction = Direction.Down;
-            }
             if (gamePadState.ThumbSticks.Left.Y > 0.1f)
             {
                 Direction = Direction.Up;
             }
-            if (gamePadState.ThumbSticks.Left.X < -0.1f)
+            if (gamePadState.ThumbSticks.Left.Y < -0.1f)
             {
-                Direction = Direction.Left;
+                Direction = Direction.Down;
             }
             if (gamePadState.ThumbSticks.Left.X > 0.1f)
             {
                 Direction = Direction.Right;
             }
+            if (gamePadState.ThumbSticks.Left.X < -0.1f)
+            {
+                Direction = Direction.Left;
+            }
+            
 
 
             //check if both the gamepad and controller are not recieving movement then set to idle if so

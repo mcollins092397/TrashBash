@@ -69,11 +69,11 @@ namespace TrashBash
 
             playBtn.Color = Color.White;
 
-            if (player.Bounds.CollidesWith(playBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
             {
                 playBtn.Color = Color.Red;
             }
-            if (player.Bounds.CollidesWith(exitBtn.Bounds) && Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
             {
                 Exit();
             }
@@ -86,14 +86,14 @@ namespace TrashBash
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             _spriteBatch.Draw(title, new Vector2(30, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
             _spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);
             trashSpider.Draw(gameTime, _spriteBatch);
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);
-            _spriteBatch.DrawString(spriteFont, "              WASD to Move \n             Space to interact\nEsc or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 190), GraphicsDevice.Viewport.Height - 100), Color.White);
+            _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
             player.Draw(gameTime, _spriteBatch);
 
             _spriteBatch.End();
