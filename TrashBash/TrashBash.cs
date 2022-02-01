@@ -127,9 +127,14 @@ namespace TrashBash
             {
                 if (proj.Position.X > GraphicsDevice.Viewport.Width || proj.Position.X < 0 || proj.Position.Y > GraphicsDevice.Viewport.Height || proj.Position.Y < 0)
                 {
-                    PlayerProjectile.Remove(proj);
+                    add the projectile to a remove list
                 }
             }
+
+            then for each in the remove list
+                remove from the main list
+
+            clear the remove list
             */
             base.Update(gameTime);
         }
