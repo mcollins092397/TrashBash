@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace TrashBash
 {
@@ -22,6 +23,8 @@ namespace TrashBash
 
         private SpriteFont spriteFont;
 
+        public List<PlayerProjectile> PlayerProjectile;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -37,6 +40,7 @@ namespace TrashBash
             player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
             exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
+            PlayerProjectile = new List<PlayerProjectile>();
 
             base.Initialize();
         }
@@ -55,6 +59,11 @@ namespace TrashBash
             title = Content.Load<Texture2D>("TrashBash");
             rat = Content.Load<Texture2D>("Rat");
             spriteFont = Content.Load<SpriteFont>("arial");
+
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.LoadContent(Content);
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -78,6 +87,50 @@ namespace TrashBash
                 Exit();
             }
 
+            //Check for fire commands and add projectile to list
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) || GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.Y > 0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile((float)0.5, 0, Direction.Up, player.Position));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down) || GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.Y < -0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile((float)0.5, 0, Direction.Down, player.Position));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Left) || GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.X < -0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile((float)0.5, 0, Direction.Left, player.Position));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right) || GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.X > 0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile((float)0.5, 0, Direction.Right, player.Position));
+            }
+
+            //Load content for every projectile in the list
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                if (proj.ContentLoaded == false)
+                {
+                    proj.LoadContent(Content);
+                    proj.ContentLoaded = true;
+                }
+                
+            }
+
+            //Update each projectile in list
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.Update(gameTime);
+            }
+
+            /*
+            foreach(PlayerProjectile proj in PlayerProjectile)
+            {
+                if (proj.Position.X > GraphicsDevice.Viewport.Width || proj.Position.X < 0 || proj.Position.Y > GraphicsDevice.Viewport.Height || proj.Position.Y < 0)
+                {
+                    PlayerProjectile.Remove(proj);
+                }
+            }
+            */
             base.Update(gameTime);
         }
 
@@ -95,6 +148,11 @@ namespace TrashBash
             exitBtn.Draw(gameTime, _spriteBatch);
             _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
             player.Draw(gameTime, _spriteBatch);
+
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.Draw(gameTime, _spriteBatch);
+            }
             
 
             _spriteBatch.End();

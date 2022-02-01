@@ -107,8 +107,6 @@ namespace TrashBash
                 Direction = Direction.Left;
             }
             
-
-
             //check if both the gamepad and controller are not recieving movement then set to idle if so
             if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D) && gamePadState.ThumbSticks.Left.Y == 0 && gamePadState.ThumbSticks.Left.X == 0)
             {
