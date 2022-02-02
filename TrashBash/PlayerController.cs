@@ -38,6 +38,13 @@ namespace TrashBash
 
         private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 20, 200), 25, 64);
 
+        public List<PlayerProjectile> PlayerProjectile = new List<PlayerProjectile>();
+        private List<PlayerProjectile> removeList = new List<PlayerProjectile>();
+
+        private float projSpeed = 2;
+        private float projDmg = 1;
+        private float projRange = 200;
+        private float projFireRate = 5;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -60,9 +67,13 @@ namespace TrashBash
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("DudeBro");
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.LoadContent(content);
+            }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, ContentManager content)
         {
             gamePadState = GamePad.GetState(0);
             keyboardState = Keyboard.GetState();
@@ -119,7 +130,59 @@ namespace TrashBash
                 sipTimer = 0;
             }
 
+            //Check for fire commands and add projectile to list
+            if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position));
+            }
+            if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position));
+            }
+            if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position));
+            }
+            if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
+            {
+                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position));
+            }
 
+            //Load content for every projectile in the list
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                if (proj.ContentLoaded == false)
+                {
+                    proj.LoadContent(content);
+                    proj.ContentLoaded = true;
+                }
+
+            }
+
+            //Update each projectile in list
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.Update(gameTime);
+            }
+
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                if (proj.Position.X > Position.X + projRange || proj.Position.X < Position.X - projRange || proj.Position.Y > Position.Y + projRange || proj.Position.Y < Position.Y - projRange)
+                {
+                    //add the projectile to a remove list
+                    removeList.Add(proj);
+                }
+            }
+
+            //then for each in the remove list
+            foreach (PlayerProjectile proj in removeList)
+            {
+                PlayerProjectile.Remove(proj);
+            }
+            //remove from the main list
+
+            //clear the remove list
+            removeList.Clear();
 
             //update the bounds
             bounds.X = Position.X + 20;
@@ -151,6 +214,11 @@ namespace TrashBash
                     animationFrame = 0;
                 }
                 animationTimer -= 0.2;
+            }
+
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                proj.Draw(gameTime, spriteBatch);
             }
 
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);

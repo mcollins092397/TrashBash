@@ -13,6 +13,7 @@ namespace TrashBash
     {
         private float speed;
         private float damage;
+        public float Range;
         public Vector2 Position;
         private Direction direction;
         private Texture2D texture;
@@ -23,11 +24,12 @@ namespace TrashBash
 
         public BoundingCircle Bounds => bounds;
 
-        public PlayerProjectile(float speed, float damage, Direction direction, Vector2 position)
+        public PlayerProjectile(float speed, float damage, Direction direction, float range, Vector2 position)
         {
             this.speed = speed;
             this.damage = damage;
             this.direction = direction;
+            this.Range = range;
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(8, 8), 8);
         }
