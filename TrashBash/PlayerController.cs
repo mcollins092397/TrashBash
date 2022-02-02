@@ -46,6 +46,8 @@ namespace TrashBash
         private float projRange = 200;
         private float projFireRate = 5;
 
+        private float movementSpeed = 1.5f;
+
         /// <summary>
         /// bounding volume of the sprite
         /// </summary>
@@ -80,27 +82,27 @@ namespace TrashBash
             //Keyboard Movement
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                Position += new Vector2(0, -1);
+                Position += new Vector2(0, -movementSpeed);
                 Direction = Direction.Up;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                Position += new Vector2(0, 1);
+                Position += new Vector2(0, movementSpeed);
                 Direction = Direction.Down;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                Position += new Vector2(1, 0);
+                Position += new Vector2(movementSpeed, 0);
                 Direction = Direction.Right;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                Position += new Vector2(-1, 0);
+                Position += new Vector2(-movementSpeed, 0);
                 Direction = Direction.Left;
             }
 
             //Controller Movement
-            Position += gamePadState.ThumbSticks.Left * new Vector2(1, -1);
+            Position += gamePadState.ThumbSticks.Left * new Vector2(movementSpeed, -movementSpeed);
             if (gamePadState.ThumbSticks.Left.Y > 0.1f)
             {
                 Direction = Direction.Up;
