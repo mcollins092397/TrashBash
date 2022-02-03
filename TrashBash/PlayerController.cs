@@ -44,8 +44,8 @@ namespace TrashBash
         private float projSpeed = 2;
         private float projDmg = 1;
         private float projRange = 200;
-        private float projFireRate = 5;
-        private float fireRateTimer;
+        private float projFireRate = 1f;
+        private double lastFire = 0;
 
         private float movementSpeed = 2f;
 
@@ -133,27 +133,34 @@ namespace TrashBash
                 sipTimer = 0;
             }
 
+
+
             //Check for fire commands and add projectile to list
-            if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
+            if(gameTime.TotalGameTime.TotalSeconds > (lastFire + projFireRate))
             {
-                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position));
-                fireRateTimer = projFireRate;
+                if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
+                {
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position));
+                    lastFire = gameTime.TotalGameTime.TotalSeconds;
+                }
+                else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
+                {
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position));
+                    lastFire = gameTime.TotalGameTime.TotalSeconds;
+                }
+                else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
+                {
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position));
+                    lastFire = gameTime.TotalGameTime.TotalSeconds;
+                }
+                else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
+                {
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position));
+                    lastFire = gameTime.TotalGameTime.TotalSeconds;
+                }
+
             }
-            if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
-            {
-                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position));
-                fireRateTimer = projFireRate;
-            }
-            if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
-            {
-                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position));
-                fireRateTimer = projFireRate;
-            }
-            if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
-            {
-                PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position));
-                fireRateTimer = projFireRate;
-            }
+            
 
             //Load content for every projectile in the list
             foreach (PlayerProjectile proj in PlayerProjectile)
