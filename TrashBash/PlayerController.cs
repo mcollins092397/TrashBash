@@ -48,6 +48,7 @@ namespace TrashBash
         private double lastFire = 0;
 
         private float movementSpeed = 2f;
+        private int playerHealth;
 
         /// <summary>
         /// bounding volume of the sprite

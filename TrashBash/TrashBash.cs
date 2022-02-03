@@ -65,6 +65,7 @@ namespace TrashBash
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            bool playHit = false;
             // TODO: Add your update logic here
 
             trashSpider.Update(gameTime);
@@ -81,6 +82,15 @@ namespace TrashBash
                 Exit();
             }
             
+            foreach(PlayerProjectile proj in player.PlayerProjectile)
+            {
+                if(proj.Bounds.CollidesWith(playBtn.Bounds))
+                {
+                    playBtn.Color = Color.Red;
+                }
+            }
+
+
             base.Update(gameTime);
         }
 

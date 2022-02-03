@@ -57,6 +57,9 @@ namespace TrashBash
             {
                 Position += new Vector2(speed, 0);
             }
+
+            //update the bounds
+            bounds.Center = new Vector2(Position.X + 8, Position.Y + 8);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
