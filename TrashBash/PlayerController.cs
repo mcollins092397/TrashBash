@@ -48,7 +48,8 @@ namespace TrashBash
         private double lastFire = 0;
 
         private float movementSpeed = 2f;
-        private int playerHealth;
+        public int PlayerMaxHealth = 6;
+        public int PlayerCurrentHealth;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -75,6 +76,7 @@ namespace TrashBash
             {
                 proj.LoadContent(content);
             }
+            PlayerCurrentHealth = PlayerMaxHealth;
         }
 
         public void Update(GameTime gameTime, ContentManager content)

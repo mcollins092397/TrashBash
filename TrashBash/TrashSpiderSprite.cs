@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using TrashBash.Collisions;
 
 namespace TrashBash
 {
@@ -15,7 +16,6 @@ namespace TrashBash
         Left = 0,
         Right = 1
     }
-
 
     public class TrashSpiderSprite
     {
@@ -33,6 +33,16 @@ namespace TrashBash
 
         private Texture2D texture;
 
+        private BoundingCircle bounds;
+
+        public BoundingCircle Bounds => bounds;
+
+
+        /// <summary>
+        /// color blend of the trash spider
+        /// </summary>
+        public Color Color { get; set; } = Color.White;
+
         /// <summary>
         /// Loads the trash spider texture
         /// </summary>
@@ -40,6 +50,7 @@ namespace TrashBash
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("TrashSpiderLeftRight");
+            bounds = new BoundingCircle(Position + new Vector2(32, 32), 16);
         }
 
         /// <summary>
@@ -75,6 +86,9 @@ namespace TrashBash
                     Position += new Vector2(-1, 0) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     break;
             }
+            
+            //update the bounds
+            bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
         }
 
 
@@ -102,7 +116,7 @@ namespace TrashBash
 
             //draw spider based on what frame it is in
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
-            spriteBatch.Draw(texture, Position, source, Color.White);
+            spriteBatch.Draw(texture, Position, source, Color);
         }
 
     }

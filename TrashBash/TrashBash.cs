@@ -29,6 +29,9 @@ namespace TrashBash
             _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
+            _graphics.PreferredBackBufferWidth = 760;
+            _graphics.PreferredBackBufferHeight = 480;
+            _graphics.ApplyChanges();
         }
 
         protected override void Initialize()
@@ -65,13 +68,13 @@ namespace TrashBash
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            bool playHit = false;
             // TODO: Add your update logic here
 
             trashSpider.Update(gameTime);
             player.Update(gameTime, Content);
 
-            playBtn.Color = Color.White;
+            trashSpider.Color = Color.White;
+            player.Color = Color.White;
 
             if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
             {
@@ -84,12 +87,17 @@ namespace TrashBash
             
             foreach(PlayerProjectile proj in player.PlayerProjectile)
             {
-                if(proj.Bounds.CollidesWith(playBtn.Bounds))
+                if(proj.Bounds.CollidesWith(trashSpider.Bounds))
                 {
-                    playBtn.Color = Color.Red;
+                    trashSpider.Color = Color.Red;
                 }
             }
 
+            if (player.Bounds.CollidesWith(trashSpider.Bounds))
+            {
+                player.Color = Color.Red;
+                player.PlayerCurrentHealth--;
+            }
 
             base.Update(gameTime);
         }
@@ -107,6 +115,7 @@ namespace TrashBash
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);
             _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
             player.Draw(gameTime, _spriteBatch);
             
 
