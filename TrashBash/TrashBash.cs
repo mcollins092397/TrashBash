@@ -23,6 +23,8 @@ namespace TrashBash
 
         private SpriteFont spriteFont;
 
+        private int state = 1;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -75,6 +77,7 @@ namespace TrashBash
 
             trashSpider.Color = Color.White;
             player.Color = Color.White;
+            playBtn.Color = Color.White;
 
             if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
             {
@@ -115,7 +118,7 @@ namespace TrashBash
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);
             _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
-            _spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
+            //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
             player.Draw(gameTime, _spriteBatch);
             
 
