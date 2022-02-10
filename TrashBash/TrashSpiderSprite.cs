@@ -20,12 +20,9 @@ namespace TrashBash
     public class TrashSpiderSprite
     {
 
-        public SpiderDirection Direction = SpiderDirection.Right;
-
+        public SpiderDirection Direction;
 
         public Vector2 Position;
-
-        private double directionTimer;
 
         private double animationTimer;
 
@@ -36,6 +33,19 @@ namespace TrashBash
         private BoundingCircle bounds;
 
         public BoundingCircle Bounds => bounds;
+
+        public double Health = 2;
+
+        private double iFrameTimer = 0;
+
+        public bool Hit = false;
+
+        public TrashSpiderSprite(Vector2 position, ContentManager content)
+        {
+            this.Position = position;
+            this.bounds = new BoundingCircle(position + new Vector2(32, 32), 16);
+            LoadContent(content);
+        }
 
 
         /// <summary>
@@ -57,38 +67,40 @@ namespace TrashBash
         /// Update the trash spider
         /// </summary>
         /// <param name="gameTime">game time</param>
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Vector2 targetLocation)
         {
-            //Swaps the spider direction from left to right every two seconds
-            directionTimer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            if(directionTimer > 1.0)
+            if (Position.X < targetLocation.X)
             {
-                switch(Direction)
-                {
-                    case SpiderDirection.Right:
-                        Direction = SpiderDirection.Left;
-                        break;
-                    case SpiderDirection.Left:
-                        Direction = SpiderDirection.Right;
-                        break;
-                }
-                directionTimer -= 1.0;
+                Position += new Vector2(1, 0);
             }
-
-            //Move the spider based on the set direction
-            switch (Direction)
+            if (Position.X > targetLocation.X)
             {
-                case SpiderDirection.Right:
-                    Position += new Vector2(1, 0) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-                case SpiderDirection.Left:
-                    Position += new Vector2(-1, 0) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
+                Position += new Vector2(-1, 0);
             }
-            
+            if (Position.Y < targetLocation.Y)
+            {
+                Position += new Vector2(0, 1);
+            }
+            if (Position.Y > targetLocation.Y)
+            {
+                Position += new Vector2(0, -1);
+            }
             //update the bounds
             bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
+
+            if(Hit)
+            {
+                iFrameTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                Color = Color.Red;
+
+                if (iFrameTimer > .2)
+                {
+                    Hit = false;
+                }
+            }
+            
+
+
         }
 
 

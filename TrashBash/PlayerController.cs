@@ -39,7 +39,7 @@ namespace TrashBash
         private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 20, 200), 25, 64);
 
         public List<PlayerProjectile> PlayerProjectile = new List<PlayerProjectile>();
-        private List<PlayerProjectile> removeList = new List<PlayerProjectile>();
+        public List<PlayerProjectile> ProjectileRemove = new List<PlayerProjectile>();
 
         private float projSpeed = 2;
         private float projDmg = 1;
@@ -72,10 +72,6 @@ namespace TrashBash
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("DudeBro");
-            foreach (PlayerProjectile proj in PlayerProjectile)
-            {
-                proj.LoadContent(content);
-            }
             PlayerCurrentHealth = PlayerMaxHealth;
         }
 
@@ -143,22 +139,22 @@ namespace TrashBash
             {
                 if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position));
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position + new Vector2(22,15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position));
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position));
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position));
+                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
 
@@ -187,19 +183,19 @@ namespace TrashBash
                 if (proj.Position.X > Position.X + projRange || proj.Position.X < Position.X - projRange || proj.Position.Y > Position.Y + projRange || proj.Position.Y < Position.Y - projRange)
                 {
                     //add the projectile to a remove list
-                    removeList.Add(proj);
+                    ProjectileRemove.Add(proj);
                 }
             }
 
             //then for each in the remove list
-            foreach (PlayerProjectile proj in removeList)
+            foreach (PlayerProjectile proj in ProjectileRemove)
             {
                 PlayerProjectile.Remove(proj);
             }
             //remove from the main list
 
             //clear the remove list
-            removeList.Clear();
+            ProjectileRemove.Clear();
 
             //update the bounds
             bounds.X = Position.X + 20;

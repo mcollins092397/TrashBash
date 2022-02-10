@@ -5,12 +5,16 @@ using System.Collections.Generic;
 
 namespace TrashBash
 {
+
+    public enum State
+    {
+        MainMenu = 0,
+        Level1 = 1,
+    }
     public class TrashBash : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        private TrashSpiderSprite trashSpider;
 
         private PlayerController player;
 
@@ -23,7 +27,10 @@ namespace TrashBash
 
         private SpriteFont spriteFont;
 
-        private int state = 1;
+        private State gameState = 0;
+
+        public List<TrashSpiderSprite> Spiders = new List<TrashSpiderSprite>();
+        private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
 
         public TrashBash()
         {
@@ -39,10 +46,13 @@ namespace TrashBash
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            trashSpider = new TrashSpiderSprite() { Position = new Vector2(400, 192) };
+            //trashSpider = new TrashSpiderSprite() { Position = new Vector2(400, 192) };
             player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
             exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
+
+
+            Spiders.Add(new TrashSpiderSprite(new Vector2(0,0), Content));
 
 
             base.Initialize();
@@ -54,7 +64,6 @@ namespace TrashBash
 
             // TODO: use this.Content to load your game content here
 
-            trashSpider.LoadContent(Content);
             player.LoadContent(Content);
             playBtn.LoadContent(Content);
             exitBtn.LoadContent(Content);
@@ -72,34 +81,66 @@ namespace TrashBash
 
             // TODO: Add your update logic here
 
-            trashSpider.Update(gameTime);
             player.Update(gameTime, Content);
 
-            trashSpider.Color = Color.White;
             player.Color = Color.White;
-            playBtn.Color = Color.White;
 
-            if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+
+            if(gameState == State.MainMenu)
             {
-                playBtn.Color = Color.Red;
-            }
-            if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
-            {
-                Exit();
-            }
-            
-            foreach(PlayerProjectile proj in player.PlayerProjectile)
-            {
-                if(proj.Bounds.CollidesWith(trashSpider.Bounds))
+                playBtn.Color = Color.White;
+
+                if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
-                    trashSpider.Color = Color.Red;
+                    playBtn.Color = Color.Red;
+                    gameState = State.Level1;
+                }
+                if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                {
+                    Exit();
                 }
             }
 
-            if (player.Bounds.CollidesWith(trashSpider.Bounds))
+            
+            
+            
+            if(gameState == State.Level1)
             {
-                player.Color = Color.Red;
-                player.PlayerCurrentHealth--;
+                foreach(TrashSpiderSprite spider in Spiders)
+                {
+                    spider.Update(gameTime, player.Position);
+                    
+                    if(spider.Hit == false)
+                    {
+                        spider.Color = Color.White;
+                    }
+
+                    foreach (PlayerProjectile proj in player.PlayerProjectile)
+                    {
+                        if (proj.Bounds.CollidesWith(spider.Bounds))
+                        {
+                            spider.Hit = true;
+                            spider.Health -= proj.Damage;
+                            if(spider.Health <= 0)
+                            {
+                                deadSpiders.Add(spider);
+                            }
+                            player.ProjectileRemove.Add(proj);
+                        }
+                    }
+
+                    if (player.Bounds.CollidesWith(spider.Bounds))
+                    {
+                        player.Color = Color.Red;
+                        player.PlayerCurrentHealth--;
+                    }
+                }
+                
+              
+                foreach(TrashSpiderSprite spider in deadSpiders)
+                {
+                    Spiders.Remove(spider);
+                }
             }
 
             base.Update(gameTime);
@@ -112,15 +153,21 @@ namespace TrashBash
             // TODO: Add your drawing code here
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-            _spriteBatch.Draw(title, new Vector2(30, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
-            _spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);
-            trashSpider.Draw(gameTime, _spriteBatch);
+            _spriteBatch.Draw(title, new Vector2(70, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
             playBtn.Draw(gameTime, _spriteBatch);
             exitBtn.Draw(gameTime, _spriteBatch);
-            _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 100), Color.White);
-            //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
+            _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
             player.Draw(gameTime, _spriteBatch);
-            
+
+            foreach (TrashSpiderSprite spider in Spiders)
+            {
+                spider.Draw(gameTime, _spriteBatch);
+            }
+
+
+            //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
+            //trashSpider.Draw(gameTime, _spriteBatch);
+            //_spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);
 
             _spriteBatch.End();
 

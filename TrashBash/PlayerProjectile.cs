@@ -12,7 +12,7 @@ namespace TrashBash
     public class PlayerProjectile
     {
         private float speed;
-        private float damage;
+        public float Damage;
         public float Range;
         public Vector2 Position;
         private Direction direction;
@@ -27,7 +27,7 @@ namespace TrashBash
         public PlayerProjectile(float speed, float damage, Direction direction, float range, Vector2 position)
         {
             this.speed = speed;
-            this.damage = damage;
+            this.Damage = damage;
             this.direction = direction;
             this.Range = range;
             this.Position = position;
