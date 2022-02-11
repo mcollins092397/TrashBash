@@ -51,6 +51,10 @@ namespace TrashBash
         public int PlayerMaxHealth = 6;
         public int PlayerCurrentHealth;
 
+        public bool Hit = false;
+        private float iFrameTimer;
+        public float Iframes = 1f;
+
         /// <summary>
         /// bounding volume of the sprite
         /// </summary>
@@ -196,6 +200,22 @@ namespace TrashBash
 
             //clear the remove list
             ProjectileRemove.Clear();
+
+            if (Hit)
+            {
+                iFrameTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                Color = Color.Red;
+
+                if (iFrameTimer > Iframes)
+                {
+                    Hit = false;
+                    iFrameTimer = 0;
+                }
+            }
+            if(!Hit)
+            {
+                Color = Color.White;
+            }
 
             //update the bounds
             bounds.X = Position.X + 20;

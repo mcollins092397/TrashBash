@@ -89,7 +89,7 @@ namespace TrashBash
 
             player.Update(gameTime, Content);
 
-            player.Color = Color.White;
+            //player.Color = Color.White;
 
 
             if(gameState == State.MainMenu)
@@ -159,11 +159,15 @@ namespace TrashBash
                         }
                     }
 
-                    if (player.Bounds.CollidesWith(spider.Bounds))
+                    if(player.Hit == false)
                     {
-                        player.Color = Color.Red;
-                        player.PlayerCurrentHealth--;
+                        if (player.Bounds.CollidesWith(spider.Bounds))
+                        {
+                            player.Hit = true;
+                            player.PlayerCurrentHealth--;
+                        }
                     }
+                    
 
                     if (scaler == 10)
                     {
@@ -181,10 +185,26 @@ namespace TrashBash
                 {
                     Spiders.Remove(spider);
                 }
+                deadSpiders.Clear();
 
                 if(player.PlayerCurrentHealth <= 0)
                 {
                     gameState = State.GameOver;
+                }
+            }
+
+            if(gameState == State.GameOver)
+            {
+                if ((Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                {
+                    Spiders.Clear();
+                    player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, (GraphicsDevice.Viewport.Height / 2) - 30);
+                    player.PlayerCurrentHealth = player.PlayerMaxHealth;
+                    score = 0;
+                    scaler = 0;
+                    enemySpawn = 2;
+                    player.ProjFireRate = .75f;
+                    gameState = State.Level1;
                 }
             }
 
@@ -221,9 +241,8 @@ namespace TrashBash
 
             if(gameState == State.GameOver)
             {
-                _spriteBatch.DrawString(spriteFont, "GAME OVER", new Vector2((GraphicsDevice.Viewport.Width / 2) - 70, GraphicsDevice.Viewport.Height / 2), Color.White);
+                _spriteBatch.DrawString(spriteFont, "          GAME OVER\n   Esc/Back button to exit\nPress Space or A to restart", new Vector2((GraphicsDevice.Viewport.Width / 2) - 140, (GraphicsDevice.Viewport.Height / 2) - 30), Color.White);
             }
-
 
 
 
