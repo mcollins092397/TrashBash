@@ -41,13 +41,13 @@ namespace TrashBash
         public List<PlayerProjectile> PlayerProjectile = new List<PlayerProjectile>();
         public List<PlayerProjectile> ProjectileRemove = new List<PlayerProjectile>();
 
-        private float projSpeed = 2;
-        private float projDmg = 1;
-        private float projRange = 200;
-        private float projFireRate = 1f;
+        public float ProjSpeed = 3;
+        public float ProjDmg = 1;
+        public float ProjRange = 200;
+        public float ProjFireRate = .75f;
         private double lastFire = 0;
 
-        private float movementSpeed = 2f;
+        public float MovementSpeed = 2f;
         public int PlayerMaxHealth = 6;
         public int PlayerCurrentHealth;
 
@@ -82,27 +82,27 @@ namespace TrashBash
             //Keyboard Movement
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                Position += new Vector2(0, -movementSpeed);
+                Position += new Vector2(0, -MovementSpeed);
                 Direction = Direction.Up;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                Position += new Vector2(0, movementSpeed);
+                Position += new Vector2(0, MovementSpeed);
                 Direction = Direction.Down;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                Position += new Vector2(movementSpeed, 0);
+                Position += new Vector2(MovementSpeed, 0);
                 Direction = Direction.Right;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                Position += new Vector2(-movementSpeed, 0);
+                Position += new Vector2(-MovementSpeed, 0);
                 Direction = Direction.Left;
             }
 
             //Controller Movement
-            Position += gamePadState.ThumbSticks.Left * new Vector2(movementSpeed, -movementSpeed);
+            Position += gamePadState.ThumbSticks.Left * new Vector2(MovementSpeed, -MovementSpeed);
             if (gamePadState.ThumbSticks.Left.Y > 0.1f)
             {
                 Direction = Direction.Up;
@@ -135,26 +135,26 @@ namespace TrashBash
 
 
             //Check for fire commands and add projectile to list
-            if(gameTime.TotalGameTime.TotalSeconds > (lastFire + projFireRate))
+            if(gameTime.TotalGameTime.TotalSeconds > (lastFire + ProjFireRate))
             {
                 if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Up, projRange, Position + new Vector2(22,15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Up, ProjRange, Position + new Vector2(22,15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Down, projRange, Position + new Vector2(22, 15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Down, ProjRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Left, projRange, Position + new Vector2(22, 15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Left, ProjRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(projSpeed, projDmg, Direction.Right, projRange, Position + new Vector2(22, 15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Right, ProjRange, Position + new Vector2(22, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
 
@@ -180,7 +180,7 @@ namespace TrashBash
 
             foreach (PlayerProjectile proj in PlayerProjectile)
             {
-                if (proj.Position.X > Position.X + projRange || proj.Position.X < Position.X - projRange || proj.Position.Y > Position.Y + projRange || proj.Position.Y < Position.Y - projRange)
+                if (proj.Position.X > Position.X + ProjRange || proj.Position.X < Position.X - ProjRange || proj.Position.Y > Position.Y + ProjRange || proj.Position.Y < Position.Y - ProjRange)
                 {
                     //add the projectile to a remove list
                     ProjectileRemove.Add(proj);

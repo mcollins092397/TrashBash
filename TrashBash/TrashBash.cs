@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System;
 
 namespace TrashBash
 {
@@ -10,6 +11,7 @@ namespace TrashBash
     {
         MainMenu = 0,
         Level1 = 1,
+        GameOver = 2
     }
     public class TrashBash : Game
     {
@@ -32,6 +34,13 @@ namespace TrashBash
         public List<TrashSpiderSprite> Spiders = new List<TrashSpiderSprite>();
         private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
 
+        private Random rnd = new Random();
+
+
+        private int score = 0;
+        private int enemySpawn = 2;
+        private int scaler = 0;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -50,9 +59,6 @@ namespace TrashBash
             player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
             exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
-
-
-            Spiders.Add(new TrashSpiderSprite(new Vector2(0,0), Content));
 
 
             base.Initialize();
@@ -106,6 +112,28 @@ namespace TrashBash
             
             if(gameState == State.Level1)
             {
+                if(Spiders.Count < enemySpawn)
+                {
+                    int side = rnd.Next(0, 4);
+                    
+                    if (side == 0)
+                    {
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, 760), 0), Content));
+                    }
+                    else if (side == 1)
+                    {
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, 480)), Content));
+                    }
+                    else if (side == 2)
+                    {
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, 760), GraphicsDevice.Viewport.Height), Content));
+                    }
+                    else if (side == 3)
+                    {
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, 480)), Content));
+                    }
+                }
+
                 foreach(TrashSpiderSprite spider in Spiders)
                 {
                     spider.Update(gameTime, player.Position);
@@ -124,6 +152,8 @@ namespace TrashBash
                             if(spider.Health <= 0)
                             {
                                 deadSpiders.Add(spider);
+                                score++;
+                                scaler++;
                             }
                             player.ProjectileRemove.Add(proj);
                         }
@@ -134,12 +164,27 @@ namespace TrashBash
                         player.Color = Color.Red;
                         player.PlayerCurrentHealth--;
                     }
+
+                    if (scaler == 10)
+                    {
+                        scaler = 0;
+                        if (player.ProjFireRate > .1)
+                        {
+                            player.ProjFireRate -= .1f;
+                        }
+                        enemySpawn++;
+                    }
                 }
                 
               
                 foreach(TrashSpiderSprite spider in deadSpiders)
                 {
                     Spiders.Remove(spider);
+                }
+
+                if(player.PlayerCurrentHealth <= 0)
+                {
+                    gameState = State.GameOver;
                 }
             }
 
@@ -153,20 +198,35 @@ namespace TrashBash
             // TODO: Add your drawing code here
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
-            _spriteBatch.Draw(title, new Vector2(70, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
-            playBtn.Draw(gameTime, _spriteBatch);
-            exitBtn.Draw(gameTime, _spriteBatch);
-            _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
-            player.Draw(gameTime, _spriteBatch);
-
-            foreach (TrashSpiderSprite spider in Spiders)
+            if(gameState == State.MainMenu)
             {
-                spider.Draw(gameTime, _spriteBatch);
+                _spriteBatch.Draw(title, new Vector2(70, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
+                playBtn.Draw(gameTime, _spriteBatch);
+                exitBtn.Draw(gameTime, _spriteBatch);
+                _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
+                player.Draw(gameTime, _spriteBatch);
+            }
+            
+
+
+            if(gameState == State.Level1)
+            {
+                foreach (TrashSpiderSprite spider in Spiders)
+                {
+                    spider.Draw(gameTime, _spriteBatch);
+                }
+                _spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth + "\nScore: " + score, new Vector2(20, 20), Color.White);
+                player.Draw(gameTime, _spriteBatch);
+            }
+
+            if(gameState == State.GameOver)
+            {
+                _spriteBatch.DrawString(spriteFont, "GAME OVER", new Vector2((GraphicsDevice.Viewport.Width / 2) - 70, GraphicsDevice.Viewport.Height / 2), Color.White);
             }
 
 
-            //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth, new Vector2(20, 20), Color.White);
-            //trashSpider.Draw(gameTime, _spriteBatch);
+
+
             //_spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);
 
             _spriteBatch.End();
