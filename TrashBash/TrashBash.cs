@@ -23,6 +23,9 @@ namespace TrashBash
         private Texture2D ball;
         private Texture2D title;
         private Texture2D rat;
+        private Texture2D healthCan;
+        private Texture2D halfHealthCan;
+        private Texture2D emptyHealthCan;
 
         private PlayBtn playBtn;
         private ExitBtn exitBtn;
@@ -47,8 +50,8 @@ namespace TrashBash
             _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
-            _graphics.PreferredBackBufferWidth = 760;
-            _graphics.PreferredBackBufferHeight = 480;
+            _graphics.PreferredBackBufferWidth = 1366;
+            _graphics.PreferredBackBufferHeight = 768;
             _graphics.ApplyChanges();
         }
 
@@ -77,7 +80,9 @@ namespace TrashBash
             title = Content.Load<Texture2D>("TrashBash");
             rat = Content.Load<Texture2D>("Rat");
             spriteFont = Content.Load<SpriteFont>("arial");
-
+            healthCan = Content.Load<Texture2D>("HealthCans(hud)/Can");
+            emptyHealthCan = Content.Load<Texture2D>("HealthCans(hud)/TransparentCan");
+            halfHealthCan = Content.Load<Texture2D>("HealthCans(hud)/HalfCan");
         }
 
         protected override void Update(GameTime gameTime)
@@ -226,17 +231,46 @@ namespace TrashBash
                 _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
                 player.Draw(gameTime, _spriteBatch);
             }
-            
 
 
-            if(gameState == State.Level1)
+
+            if (gameState == State.Level1)
             {
                 foreach (TrashSpiderSprite spider in Spiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
                 }
-                _spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth + "\nScore: " + score, new Vector2(20, 20), Color.White);
+                //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth + "\nScore: " + score, new Vector2(20, 20), Color.White);
                 player.Draw(gameTime, _spriteBatch);
+
+                int cans = player.PlayerCurrentHealth;
+                int maxCans = player.PlayerMaxHealth;
+                Vector2 currentPos = new Vector2(20, 20);
+                while(maxCans > 0)
+                {
+                    if (maxCans >= 2)
+                    {
+                        _spriteBatch.Draw(emptyHealthCan, currentPos, Color.White);
+                        currentPos += new Vector2(45, 0);
+                        maxCans -= 2;
+                    }
+                }
+
+                currentPos = new Vector2(20, 20);
+                while (cans > 0)
+                {
+                    if (cans >= 2)
+                    {
+                        _spriteBatch.Draw(healthCan, currentPos, Color.White);
+                        currentPos += new Vector2(45, 0);
+                        cans -= 2;
+                    }
+                    else if (cans == 1)
+                    {
+                        _spriteBatch.Draw(halfHealthCan, currentPos, Color.White);
+                        cans--;
+                    }
+                }
             }
 
             if(gameState == State.GameOver)
