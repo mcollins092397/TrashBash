@@ -26,6 +26,7 @@ namespace TrashBash
         private Texture2D healthCan;
         private Texture2D halfHealthCan;
         private Texture2D emptyHealthCan;
+        private Texture2D background;
 
         private PlayBtn playBtn;
         private ExitBtn exitBtn;
@@ -83,6 +84,7 @@ namespace TrashBash
             healthCan = Content.Load<Texture2D>("HealthCans(hud)/Can");
             emptyHealthCan = Content.Load<Texture2D>("HealthCans(hud)/TransparentCan");
             halfHealthCan = Content.Load<Texture2D>("HealthCans(hud)/HalfCan");
+            background = Content.Load<Texture2D>("background");
         }
 
         protected override void Update(GameTime gameTime)
@@ -123,19 +125,19 @@ namespace TrashBash
                     
                     if (side == 0)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, 760), 0), Content));
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), 0), Content));
                     }
                     else if (side == 1)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, 480)), Content));
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
                     }
                     else if (side == 2)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, 760), GraphicsDevice.Viewport.Height), Content));
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), GraphicsDevice.Viewport.Height), Content));
                     }
                     else if (side == 3)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, 480)), Content));
+                        Spiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
                     }
                 }
 
@@ -236,6 +238,8 @@ namespace TrashBash
 
             if (gameState == State.Level1)
             {
+                _spriteBatch.Draw(background, new Vector2(0,0), Color.White);
+
                 foreach (TrashSpiderSprite spider in Spiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
