@@ -163,7 +163,24 @@ namespace TrashBash
                 }
 
             }
-            
+
+            if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
+            {
+                Direction = Direction.Up;
+            }
+            else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
+            {
+                Direction = Direction.Down;
+            }
+            else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
+            {
+                Direction = Direction.Left;
+            }
+            else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
+            {
+                Direction = Direction.Right;
+            }
+
 
             //Load content for every projectile in the list
             foreach (PlayerProjectile proj in PlayerProjectile)
