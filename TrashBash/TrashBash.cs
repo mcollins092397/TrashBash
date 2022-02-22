@@ -10,7 +10,7 @@ namespace TrashBash
     public enum State
     {
         MainMenu = 0,
-        Level1 = 1,
+        LevelWaves = 1,
         GameOver = 2
     }
     public class TrashBash : Game
@@ -20,7 +20,8 @@ namespace TrashBash
 
         private PlayerController player;
 
-        private Texture2D ball;
+        private Texture2D fence;
+        private Texture2D fenceVerticle;
         private Texture2D title;
         private Texture2D rat;
         private Texture2D healthCan;
@@ -77,14 +78,14 @@ namespace TrashBash
             player.LoadContent(Content);
             playBtn.LoadContent(Content);
             exitBtn.LoadContent(Content);
-            ball = Content.Load<Texture2D>("ball");
-            title = Content.Load<Texture2D>("TrashBash");
-            rat = Content.Load<Texture2D>("Rat");
+            title = Content.Load<Texture2D>("Logo");
             spriteFont = Content.Load<SpriteFont>("arial");
             healthCan = Content.Load<Texture2D>("HealthCans(hud)/Can");
             emptyHealthCan = Content.Load<Texture2D>("HealthCans(hud)/TransparentCan");
             halfHealthCan = Content.Load<Texture2D>("HealthCans(hud)/HalfCan");
             background = Content.Load<Texture2D>("background");
+            fence = Content.Load<Texture2D>("Fence");
+            fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
         }
 
         protected override void Update(GameTime gameTime)
@@ -106,7 +107,7 @@ namespace TrashBash
                 if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
                     playBtn.Color = Color.Red;
-                    gameState = State.Level1;
+                    gameState = State.LevelWaves;
                 }
                 if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
@@ -117,7 +118,7 @@ namespace TrashBash
             
             
             
-            if(gameState == State.Level1)
+            if(gameState == State.LevelWaves)
             {
                 if(Spiders.Count < enemySpawn)
                 {
@@ -211,7 +212,7 @@ namespace TrashBash
                     scaler = 0;
                     enemySpawn = 2;
                     player.ProjFireRate = .75f;
-                    gameState = State.Level1;
+                    gameState = State.LevelWaves;
                 }
             }
 
@@ -220,14 +221,14 @@ namespace TrashBash
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.BurlyWood);
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             if(gameState == State.MainMenu)
             {
-                _spriteBatch.Draw(title, new Vector2(70, 20), null, Color.White, 0, new Vector2(0,0), .80f, SpriteEffects.None, 0);
+                _spriteBatch.Draw(title, new Vector2(70, 20), Color.White);
                 playBtn.Draw(gameTime, _spriteBatch);
                 exitBtn.Draw(gameTime, _spriteBatch);
                 _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
@@ -236,9 +237,23 @@ namespace TrashBash
 
 
 
-            if (gameState == State.Level1)
+            if (gameState == State.LevelWaves)
             {
-                _spriteBatch.Draw(background, new Vector2(0,0), Color.White);
+                //top of screen fences
+                _spriteBatch.Draw(fence, new Vector2(4, 0), Color.White);
+                _spriteBatch.Draw(fence, new Vector2(260, 0), Color.White);
+
+                _spriteBatch.Draw(fence, new Vector2(850, 0), Color.White);
+                _spriteBatch.Draw(fence, new Vector2(1106, 0), Color.White);
+
+                //left and rigth side fences
+                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4), Color.White);
+                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4 + 256), Color.White);
+                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4 + 256 + 256), Color.White);
+
+                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4), Color.White);
+                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4 + 256), Color.White);
+                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4 + 256 + 256), Color.White);
 
                 foreach (TrashSpiderSprite spider in Spiders)
                 {
@@ -275,6 +290,13 @@ namespace TrashBash
                         cans--;
                     }
                 }
+
+                //bottom of screen fences
+                _spriteBatch.Draw(fence, new Vector2(4, 676), Color.White);
+                _spriteBatch.Draw(fence, new Vector2(260, 676), Color.White);
+
+                _spriteBatch.Draw(fence, new Vector2(850, 676), Color.White);
+                _spriteBatch.Draw(fence, new Vector2(1106, 676), Color.White);
             }
 
             if(gameState == State.GameOver)

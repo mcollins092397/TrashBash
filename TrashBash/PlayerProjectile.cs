@@ -15,7 +15,7 @@ namespace TrashBash
         public float Damage;
         public float Range;
         public Vector2 Position;
-        private Direction direction;
+        public Direction Direction;
         private Texture2D texture;
 
         public bool ContentLoaded = false;
@@ -28,7 +28,7 @@ namespace TrashBash
         {
             this.speed = speed;
             this.Damage = damage;
-            this.direction = direction;
+            this.Direction = direction;
             this.Range = range;
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(8, 8), 8);
@@ -41,19 +41,19 @@ namespace TrashBash
 
         public void Update(GameTime gameTime)
         {
-            if (direction == Direction.Up)
+            if (Direction == Direction.Up)
             {
                 Position += new Vector2(0, -speed);
             }
-            else if (direction == Direction.Down)
+            else if (Direction == Direction.Down)
             {
                 Position += new Vector2(0, speed);
             }
-            else if (direction == Direction.Left)
+            else if (Direction == Direction.Left)
             {
                 Position += new Vector2(-speed, 0);
             }
-            else if (direction == Direction.Right)
+            else if (Direction == Direction.Right)
             {
                 Position += new Vector2(speed, 0);
             }

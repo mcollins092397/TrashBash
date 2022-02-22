@@ -148,7 +148,7 @@ namespace TrashBash
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Down, ProjRange, Position + new Vector2(22, 15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Down, ProjRange, Position + new Vector2(32, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
@@ -158,7 +158,7 @@ namespace TrashBash
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
                 {
-                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Right, ProjRange, Position + new Vector2(22, 15)));
+                    PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Right, ProjRange, Position + new Vector2(52, 15)));
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
 
@@ -268,11 +268,24 @@ namespace TrashBash
 
             foreach (PlayerProjectile proj in PlayerProjectile)
             {
-                proj.Draw(gameTime, spriteBatch);
+                if (proj.Direction == Direction.Up)
+                {
+                    proj.Draw(gameTime, spriteBatch);
+                }
+
             }
 
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
             spriteBatch.Draw(texture, Position, source, Color);
+
+            foreach (PlayerProjectile proj in PlayerProjectile)
+            {
+                if (proj.Direction != Direction.Up)
+                {
+                    proj.Draw(gameTime, spriteBatch);
+                }
+                
+            }
         }
     }
 }
