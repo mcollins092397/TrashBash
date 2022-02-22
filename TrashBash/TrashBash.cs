@@ -39,6 +39,10 @@ namespace TrashBash
         public List<TrashSpiderSprite> Spiders = new List<TrashSpiderSprite>();
         private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
 
+        private List<FenceTop> fenceTops = new List<FenceTop>();
+        private List<FenceBottom> fenceBottoms = new List<FenceBottom>();
+        private List<FenceSide> fenceSides = new List<FenceSide>();
+
         private Random rnd = new Random();
 
 
@@ -49,7 +53,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -67,6 +71,48 @@ namespace TrashBash
 
 
             base.Initialize();
+        }
+
+        private void InitializeLevel1()
+        {
+            fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+            fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+            fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+            fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+            foreach(FenceTop fence in fenceTops)
+            {
+                fence.LoadContent(Content);
+            }
+
+            fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+            fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+            fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+            fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+            
+
+            foreach(FenceBottom fence in fenceBottoms)
+            {
+                fence.LoadContent(Content);
+            }
+
+            fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+            fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+            fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+            fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+            fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+            fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+            foreach (FenceSide fence in fenceSides)
+            {
+                fence.LoadContent(Content);
+            }
+
+            gameState = State.LevelWaves;
         }
 
         protected override void LoadContent()
@@ -107,7 +153,7 @@ namespace TrashBash
                 if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
                     playBtn.Color = Color.Red;
-                    gameState = State.LevelWaves;
+                    InitializeLevel1();
                 }
                 if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
@@ -171,11 +217,37 @@ namespace TrashBash
                     {
                         if (player.Bounds.CollidesWith(spider.Bounds))
                         {
-                            player.Hit = true;
-                            player.PlayerCurrentHealth--;
+                            //player.Hit = true;
+                            //player.PlayerCurrentHealth--;
                         }
                     }
-                    
+
+                    foreach(FenceTop fence in fenceTops)
+                    {
+                        if(player.Bounds.CollidesWith(fence.Bounds))
+                        {
+                            player.Position -= new Vector2(-1, -1);
+                            player.Color = Color.Red;
+                        }
+                    }
+
+                    foreach (FenceBottom fence in fenceBottoms)
+                    {
+                        if (player.Bounds.CollidesWith(fence.Bounds))
+                        {
+                            player.Position -= new Vector2(-1, -1);
+                            player.Color = Color.Red;
+                        }
+                    }
+
+                    foreach (FenceSide fence in fenceSides)
+                    {
+                        if (player.Bounds.CollidesWith(fence.Bounds))
+                        {
+                            player.Position -= new Vector2(-1, -1);
+                            player.Color = Color.Red;
+                        }
+                    }
 
                     if (scaler == 10)
                     {
@@ -240,20 +312,16 @@ namespace TrashBash
             if (gameState == State.LevelWaves)
             {
                 //top of screen fences
-                _spriteBatch.Draw(fence, new Vector2(4, 0), Color.White);
-                _spriteBatch.Draw(fence, new Vector2(260, 0), Color.White);
-
-                _spriteBatch.Draw(fence, new Vector2(850, 0), Color.White);
-                _spriteBatch.Draw(fence, new Vector2(1106, 0), Color.White);
+                foreach(FenceTop fence in fenceTops)
+                {
+                    fence.Draw(gameTime, _spriteBatch);
+                }
 
                 //left and rigth side fences
-                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4), Color.White);
-                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4 + 256), Color.White);
-                _spriteBatch.Draw(fenceVerticle, new Vector2(0, 4 + 256 + 256), Color.White);
-
-                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4), Color.White);
-                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4 + 256), Color.White);
-                _spriteBatch.Draw(fenceVerticle, new Vector2(1366 - 12, 4 + 256 + 256), Color.White);
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.Draw(gameTime, _spriteBatch);
+                }
 
                 foreach (TrashSpiderSprite spider in Spiders)
                 {
@@ -292,11 +360,10 @@ namespace TrashBash
                 }
 
                 //bottom of screen fences
-                _spriteBatch.Draw(fence, new Vector2(4, 676), Color.White);
-                _spriteBatch.Draw(fence, new Vector2(260, 676), Color.White);
-
-                _spriteBatch.Draw(fence, new Vector2(850, 676), Color.White);
-                _spriteBatch.Draw(fence, new Vector2(1106, 676), Color.White);
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.Draw(gameTime, _spriteBatch);
+                }
             }
 
             if(gameState == State.GameOver)
