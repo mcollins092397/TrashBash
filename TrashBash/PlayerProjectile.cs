@@ -17,6 +17,7 @@ namespace TrashBash
         public Vector2 Position;
         public Direction Direction;
         private Texture2D texture;
+        public Vector2 StartPosition;
 
         public bool ContentLoaded = false;
 
@@ -31,6 +32,7 @@ namespace TrashBash
             this.Direction = direction;
             this.Range = range;
             this.Position = position;
+            this.StartPosition = position;
             this.bounds = new BoundingCircle(position + new Vector2(8, 8), 8);
         }
 

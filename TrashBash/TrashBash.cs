@@ -226,7 +226,7 @@ namespace TrashBash
                     {
                         if(player.Bounds.CollidesWith(fence.Bounds))
                         {
-                            player.Position -= new Vector2(-1, -1);
+                            player.Position -= player.LastMove;
                             player.Color = Color.Red;
                         }
                     }

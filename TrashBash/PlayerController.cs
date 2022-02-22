@@ -43,7 +43,7 @@ namespace TrashBash
 
         public float ProjSpeed = 3;
         public float ProjDmg = 1;
-        public float ProjRange = 200;
+        public float ProjRange = 250;
         public float ProjFireRate = .75f;
         private double lastFire = 0;
 
@@ -54,6 +54,8 @@ namespace TrashBash
         public bool Hit = false;
         private float iFrameTimer;
         public float Iframes = 1f;
+
+        public Vector2 LastMove;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -87,21 +89,25 @@ namespace TrashBash
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 Position += new Vector2(0, -MovementSpeed);
+                LastMove = new Vector2(0, -MovementSpeed);
                 Direction = Direction.Up;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 Position += new Vector2(0, MovementSpeed);
+                LastMove = new Vector2(0, MovementSpeed);
                 Direction = Direction.Down;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
                 Position += new Vector2(MovementSpeed, 0);
+                LastMove = new Vector2(MovementSpeed, 0);
                 Direction = Direction.Right;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
                 Position += new Vector2(-MovementSpeed, 0);
+                LastMove = new Vector2(-MovementSpeed, 0);
                 Direction = Direction.Left;
             }
 
@@ -201,7 +207,7 @@ namespace TrashBash
 
             foreach (PlayerProjectile proj in PlayerProjectile)
             {
-                if (proj.Position.X > Position.X + ProjRange || proj.Position.X < Position.X - ProjRange || proj.Position.Y > Position.Y + ProjRange || proj.Position.Y < Position.Y - ProjRange)
+                if (proj.Position.X > proj.StartPosition.X + ProjRange || proj.Position.X < proj.StartPosition.X - ProjRange || proj.Position.Y > proj.StartPosition.Y + ProjRange || proj.Position.Y < proj.StartPosition.Y - ProjRange)
                 {
                     //add the projectile to a remove list
                     ProjectileRemove.Add(proj);
