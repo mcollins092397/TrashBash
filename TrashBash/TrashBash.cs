@@ -53,7 +53,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -129,7 +129,7 @@ namespace TrashBash
             healthCan = Content.Load<Texture2D>("HealthCans(hud)/Can");
             emptyHealthCan = Content.Load<Texture2D>("HealthCans(hud)/TransparentCan");
             halfHealthCan = Content.Load<Texture2D>("HealthCans(hud)/HalfCan");
-            background = Content.Load<Texture2D>("background");
+            background = Content.Load<Texture2D>("Background");
             fence = Content.Load<Texture2D>("Fence");
             fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
         }
@@ -140,7 +140,7 @@ namespace TrashBash
                 Exit();
 
             // TODO: Add your update logic here
-
+            player.LastMove = player.Position;
             player.Update(gameTime, Content);
 
             //player.Color = Color.White;
@@ -217,8 +217,8 @@ namespace TrashBash
                     {
                         if (player.Bounds.CollidesWith(spider.Bounds))
                         {
-                            //player.Hit = true;
-                            //player.PlayerCurrentHealth--;
+                            player.Hit = true;
+                            player.PlayerCurrentHealth--;
                         }
                     }
 
@@ -226,8 +226,7 @@ namespace TrashBash
                     {
                         if(player.Bounds.CollidesWith(fence.Bounds))
                         {
-                            player.Position -= player.LastMove;
-                            player.Color = Color.Red;
+                            player.Position = player.LastMove;
                         }
                     }
 
@@ -235,8 +234,7 @@ namespace TrashBash
                     {
                         if (player.Bounds.CollidesWith(fence.Bounds))
                         {
-                            player.Position -= new Vector2(-1, -1);
-                            player.Color = Color.Red;
+                            player.Position = player.LastMove;
                         }
                     }
 
@@ -244,8 +242,7 @@ namespace TrashBash
                     {
                         if (player.Bounds.CollidesWith(fence.Bounds))
                         {
-                            player.Position -= new Vector2(-1, -1);
-                            player.Color = Color.Red;
+                            player.Position = player.LastMove;
                         }
                     }
 
@@ -311,8 +308,9 @@ namespace TrashBash
 
             if (gameState == State.LevelWaves)
             {
+                _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
                 //top of screen fences
-                foreach(FenceTop fence in fenceTops)
+                foreach (FenceTop fence in fenceTops)
                 {
                     fence.Draw(gameTime, _spriteBatch);
                 }

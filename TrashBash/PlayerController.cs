@@ -89,25 +89,21 @@ namespace TrashBash
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 Position += new Vector2(0, -MovementSpeed);
-                LastMove = new Vector2(0, -MovementSpeed);
                 Direction = Direction.Up;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 Position += new Vector2(0, MovementSpeed);
-                LastMove = new Vector2(0, MovementSpeed);
                 Direction = Direction.Down;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
                 Position += new Vector2(MovementSpeed, 0);
-                LastMove = new Vector2(MovementSpeed, 0);
                 Direction = Direction.Right;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
                 Position += new Vector2(-MovementSpeed, 0);
-                LastMove = new Vector2(-MovementSpeed, 0);
                 Direction = Direction.Left;
             }
 
