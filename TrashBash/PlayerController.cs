@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using TrashBash.Collisions;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace TrashBash
 {
@@ -57,6 +59,9 @@ namespace TrashBash
 
         public Vector2 LastMove;
 
+        private SoundEffect gunshot;
+
+
         /// <summary>
         /// bounding volume of the sprite
         /// </summary>
@@ -79,6 +84,7 @@ namespace TrashBash
         {
             texture = content.Load<Texture2D>("DudeBro");
             PlayerCurrentHealth = PlayerMaxHealth;
+            gunshot = content.Load<SoundEffect>("gunshot");
         }
 
         public void Update(GameTime gameTime, ContentManager content)
@@ -146,21 +152,25 @@ namespace TrashBash
                 if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Up, ProjRange, Position + new Vector2(22,15)));
+                    gunshot.Play(.1f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Down, ProjRange, Position + new Vector2(32, 15)));
+                    gunshot.Play(.1f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Left, ProjRange, Position + new Vector2(22, 15)));
+                    gunshot.Play(.1f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Right, ProjRange, Position + new Vector2(52, 15)));
+                    gunshot.Play(.1f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
 

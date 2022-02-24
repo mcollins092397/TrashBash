@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace TrashBash
 {
@@ -28,6 +30,9 @@ namespace TrashBash
         private Texture2D halfHealthCan;
         private Texture2D emptyHealthCan;
         private Texture2D background;
+
+        private SoundEffect bagHit;
+        private SoundEffect hit;
 
         private PlayBtn playBtn;
         private ExitBtn exitBtn;
@@ -132,6 +137,8 @@ namespace TrashBash
             background = Content.Load<Texture2D>("Background");
             fence = Content.Load<Texture2D>("Fence");
             fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
+            bagHit = Content.Load<SoundEffect>("BagHit");
+            hit = Content.Load<SoundEffect>("hit");
         }
 
         protected override void Update(GameTime gameTime)
@@ -203,6 +210,7 @@ namespace TrashBash
                         {
                             spider.Hit = true;
                             spider.Health -= proj.Damage;
+                            bagHit.Play(.3f, 0, 0);
                             if(spider.Health <= 0)
                             {
                                 deadSpiders.Add(spider);
@@ -219,6 +227,7 @@ namespace TrashBash
                         {
                             player.Hit = true;
                             player.PlayerCurrentHealth--;
+                            hit.Play(.2f, 0, 0);
                         }
                     }
 
@@ -228,6 +237,13 @@ namespace TrashBash
                         {
                             player.Position = player.LastMove;
                         }
+                        foreach (PlayerProjectile proj in player.PlayerProjectile)
+                        {
+                            if (proj.Bounds.CollidesWith(fence.Bounds))
+                            {
+                                player.ProjectileRemove.Add(proj);
+                            }
+                        }
                     }
 
                     foreach (FenceBottom fence in fenceBottoms)
@@ -236,6 +252,13 @@ namespace TrashBash
                         {
                             player.Position = player.LastMove;
                         }
+                        foreach (PlayerProjectile proj in player.PlayerProjectile)
+                        {
+                            if (proj.Bounds.CollidesWith(fence.Bounds))
+                            {
+                                player.ProjectileRemove.Add(proj);
+                            }
+                        }
                     }
 
                     foreach (FenceSide fence in fenceSides)
@@ -243,6 +266,13 @@ namespace TrashBash
                         if (player.Bounds.CollidesWith(fence.Bounds))
                         {
                             player.Position = player.LastMove;
+                        }
+                        foreach (PlayerProjectile proj in player.PlayerProjectile)
+                        {
+                            if (proj.Bounds.CollidesWith(fence.Bounds))
+                            {
+                                player.ProjectileRemove.Add(proj);
+                            }
                         }
                     }
 
@@ -308,7 +338,7 @@ namespace TrashBash
 
             if (gameState == State.LevelWaves)
             {
-                _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+                //_spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
                 //top of screen fences
                 foreach (FenceTop fence in fenceTops)
                 {

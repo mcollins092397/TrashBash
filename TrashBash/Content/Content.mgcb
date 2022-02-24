@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:Background.png
 
+#begin BagHit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:BagHit.wav
+
 #begin ball.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -104,6 +110,12 @@
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont;arial.spritefont
 
+#begin gunshot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:gunshot.wav
+
 #begin HealthCans(hud)/Can.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -139,6 +151,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:HealthCans(hud)/TransparentCan.png
+
+#begin hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:hit.wav
 
 #begin Logo.png
 /importer:TextureImporter
