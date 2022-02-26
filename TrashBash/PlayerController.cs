@@ -152,25 +152,25 @@ namespace TrashBash
                 if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Up, ProjRange, Position + new Vector2(22,15)));
-                    gunshot.Play(.1f, 0, 0);
+                    gunshot.Play(.2f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Down, ProjRange, Position + new Vector2(32, 15)));
-                    gunshot.Play(.1f, 0, 0);
+                    gunshot.Play(.2f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Left, ProjRange, Position + new Vector2(22, 15)));
-                    gunshot.Play(.1f, 0, 0);
+                    gunshot.Play(.2f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
                 else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
                 {
                     PlayerProjectile.Add(new PlayerProjectile(ProjSpeed, ProjDmg, Direction.Right, ProjRange, Position + new Vector2(52, 15)));
-                    gunshot.Play(.1f, 0, 0);
+                    gunshot.Play(.2f, 0, 0);
                     lastFire = gameTime.TotalGameTime.TotalSeconds;
                 }
 

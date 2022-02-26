@@ -33,6 +33,7 @@ namespace TrashBash
 
         private SoundEffect bagHit;
         private SoundEffect hit;
+        private Song bossMusic;
 
         private PlayBtn playBtn;
         private ExitBtn exitBtn;
@@ -117,6 +118,8 @@ namespace TrashBash
                 fence.LoadContent(Content);
             }
 
+            MediaPlayer.Play(bossMusic);
+
             gameState = State.LevelWaves;
         }
 
@@ -139,6 +142,10 @@ namespace TrashBash
             fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
             bagHit = Content.Load<SoundEffect>("BagHit");
             hit = Content.Load<SoundEffect>("hit");
+
+            bossMusic = Content.Load<Song>("heavy_metal_looping");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = .1f;
         }
 
         protected override void Update(GameTime gameTime)
@@ -210,7 +217,7 @@ namespace TrashBash
                         {
                             spider.Hit = true;
                             spider.Health -= proj.Damage;
-                            bagHit.Play(.3f, 0, 0);
+                            bagHit.Play(.5f, 0, 0);
                             if(spider.Health <= 0)
                             {
                                 deadSpiders.Add(spider);
@@ -227,7 +234,7 @@ namespace TrashBash
                         {
                             player.Hit = true;
                             player.PlayerCurrentHealth--;
-                            hit.Play(.2f, 0, 0);
+                            hit.Play(.3f, 0, 0);
                         }
                     }
 
@@ -296,6 +303,7 @@ namespace TrashBash
 
                 if(player.PlayerCurrentHealth <= 0)
                 {
+                    MediaPlayer.Pause();
                     gameState = State.GameOver;
                 }
             }
@@ -311,7 +319,7 @@ namespace TrashBash
                     scaler = 0;
                     enemySpawn = 2;
                     player.ProjFireRate = .75f;
-                    gameState = State.LevelWaves;
+                    InitializeLevel1();
                 }
             }
 

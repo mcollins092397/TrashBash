@@ -152,6 +152,12 @@
 /processorParam:TextureFormat=Color
 /build:HealthCans(hud)/TransparentCan.png
 
+#begin heavy_metal_looping.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:heavy_metal_looping.mp3
+
 #begin hit.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
