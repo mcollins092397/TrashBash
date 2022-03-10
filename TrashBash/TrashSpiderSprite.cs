@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using TrashBash.Collisions;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace TrashBash
 {
@@ -14,13 +16,16 @@ namespace TrashBash
     public enum SpiderDirection
     {
         Left = 0,
-        Right = 1
+        Right = 1,
+        Asleep = 2
     }
 
     public class TrashSpiderSprite
     {
 
-        public SpiderDirection Direction;
+        private SoundEffect bagHit;
+
+        public SpiderDirection Direction = SpiderDirection.Asleep;
 
         public Vector2 Position;
 
@@ -39,6 +44,9 @@ namespace TrashBash
         private double iFrameTimer = 0;
 
         public bool Hit = false;
+
+        private bool awake = false;
+        private bool awakeAnimationPlayed = false;
 
         public TrashSpiderSprite(Vector2 position, ContentManager content)
         {
@@ -61,30 +69,47 @@ namespace TrashBash
         {
             texture = content.Load<Texture2D>("TrashSpiderLeftRight");
             bounds = new BoundingCircle(Position + new Vector2(32, 32), 16);
+            bagHit = content.Load<SoundEffect>("BagHit");
         }
 
         /// <summary>
         /// Update the trash spider
         /// </summary>
         /// <param name="gameTime">game time</param>
-        public void Update(GameTime gameTime, Vector2 targetLocation)
+        public void Update(GameTime gameTime, PlayerController player)
         {
-            if (Position.X < targetLocation.X)
+            if (Hit == false)
             {
-                Position += new Vector2(1, 0);
+                Color = Color.White;
             }
-            if (Position.X > targetLocation.X)
+
+            if(Math.Abs(player.Position.X - Position.X) < 250 && Math.Abs(player.Position.Y - Position.Y) < 250)
             {
-                Position += new Vector2(-1, 0);
+                awake = true;
             }
-            if (Position.Y < targetLocation.Y)
+
+            if (awakeAnimationPlayed)
             {
-                Position += new Vector2(0, 1);
+                if (Position.X < player.Position.X)
+                {
+                    Position += new Vector2(1, 0);
+                    Direction = SpiderDirection.Right;
+                }
+                if (Position.X > player.Position.X)
+                {
+                    Position += new Vector2(-1, 0);
+                    Direction = SpiderDirection.Left;
+                }
+                if (Position.Y < player.Position.Y)
+                {
+                    Position += new Vector2(0, 1);
+                }
+                if (Position.Y > player.Position.Y)
+                {
+                    Position += new Vector2(0, -1);
+                }
             }
-            if (Position.Y > targetLocation.Y)
-            {
-                Position += new Vector2(0, -1);
-            }
+
             //update the bounds
             bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
 
@@ -98,9 +123,18 @@ namespace TrashBash
                     Hit = false;
                 }
             }
-            
 
-
+            foreach (PlayerProjectile proj in player.PlayerProjectile)
+            {
+                if (proj.Bounds.CollidesWith(Bounds))
+                {
+                    Hit = true;
+                    awake = true;
+                    Health -= proj.Damage;
+                    bagHit.Play(.5f, 0, 0);
+                    player.ProjectileRemove.Add(proj);
+                }
+            }
         }
 
 
@@ -113,8 +147,33 @@ namespace TrashBash
         {
             //get spiderss animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            if(!awake && animationTimer > .1)
+            {
+                animationFrame = 0;
+                animationTimer -= 0.1;
+            }
 
-            if (animationTimer > .1)
+            if(awake && awakeAnimationPlayed == false && animationTimer > .1)
+            {
+                if (animationFrame == 2 && Direction == SpiderDirection.Left)
+                {
+                    awakeAnimationPlayed = true;
+                }
+
+                animationFrame++;
+
+                if (animationFrame > 3)
+                {
+                    animationFrame = 0;
+                    Direction = SpiderDirection.Left;
+                }
+
+
+
+                animationTimer -= 0.1;
+            }
+
+            if (awake && awakeAnimationPlayed == true && animationTimer > .1)
             {
                 animationFrame++;
                 

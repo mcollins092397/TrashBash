@@ -61,6 +61,8 @@ namespace TrashBash
 
         private SoundEffect gunshot;
 
+        private bool moving;
+        private bool firing;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -96,21 +98,25 @@ namespace TrashBash
             {
                 Position += new Vector2(0, -MovementSpeed);
                 Direction = Direction.Up;
+                moving = true;
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 Position += new Vector2(0, MovementSpeed);
                 Direction = Direction.Down;
+                moving = true;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
                 Position += new Vector2(MovementSpeed, 0);
                 Direction = Direction.Right;
+                moving = true;
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
                 Position += new Vector2(-MovementSpeed, 0);
                 Direction = Direction.Left;
+                moving = true;
             }
 
             //Controller Movement
@@ -118,24 +124,29 @@ namespace TrashBash
             if (gamePadState.ThumbSticks.Left.Y > 0.1f)
             {
                 Direction = Direction.Up;
+                moving = true;
             }
             if (gamePadState.ThumbSticks.Left.Y < -0.1f)
             {
                 Direction = Direction.Down;
+                moving = true;
             }
             if (gamePadState.ThumbSticks.Left.X > 0.1f)
             {
                 Direction = Direction.Right;
+                moving = true;
             }
             if (gamePadState.ThumbSticks.Left.X < -0.1f)
             {
                 Direction = Direction.Left;
+                moving = true;
             }
             
             //check if both the gamepad and controller are not recieving movement then set to idle if so
             if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D) && gamePadState.ThumbSticks.Left.Y == 0 && gamePadState.ThumbSticks.Left.X == 0)
             {
                 Direction = Direction.Idle;
+                moving = false;
             }
 
             //if the player made a movement reset sip timer
@@ -179,18 +190,26 @@ namespace TrashBash
             if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
             {
                 Direction = Direction.Up;
+                firing = true;
             }
             else if (keyboardState.IsKeyDown(Keys.Down) || gamePadState.ThumbSticks.Right.Y < -0.5f)
             {
                 Direction = Direction.Down;
+                firing = true;
             }
             else if (keyboardState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Right.X < -0.5f)
             {
                 Direction = Direction.Left;
+                firing = true;
             }
             else if (keyboardState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Right.X > 0.5f)
             {
                 Direction = Direction.Right;
+                firing = true;
+            }
+            else
+            {
+                firing = false;
             }
 
 
@@ -268,6 +287,11 @@ namespace TrashBash
                 sipTimer -= 5;
                 animationTimer -= 0.2;
             }
+            else if (animationTimer > .2 && moving == false && firing == true)
+            {
+                animationFrame = 0;
+                animationTimer -= 0.2;
+            }
             else if (animationTimer >.2)
             {
                 animationFrame++;
@@ -277,6 +301,7 @@ namespace TrashBash
                 }
                 animationTimer -= 0.2;
             }
+            
 
             foreach (PlayerProjectile proj in PlayerProjectile)
             {

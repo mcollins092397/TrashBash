@@ -10,11 +10,14 @@ namespace TrashBash
 {
     public class FenceBottom
     {
-        private Vector2 position;
+        public Vector2 Position;
 
         private BoundingRectangle bounds;
 
         private Texture2D texture;
+
+        public int Width = 256;
+        public int Height = 96;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -29,7 +32,7 @@ namespace TrashBash
 
         public FenceBottom(Vector2 position)
         {
-            this.position = position;
+            this.Position = position;
             this.bounds = new BoundingRectangle(position.X, position.Y + 90, 256, 4);
         }
 
@@ -40,7 +43,7 @@ namespace TrashBash
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, Color.White);
+            spriteBatch.Draw(texture, Position, Color.White);
         }
     }
 }
