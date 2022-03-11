@@ -40,6 +40,8 @@ namespace TrashBash
 
         private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 20, 200), 25, 64);
 
+
+
         public List<PlayerProjectile> PlayerProjectile = new List<PlayerProjectile>();
         public List<PlayerProjectile> ProjectileRemove = new List<PlayerProjectile>();
 
@@ -213,7 +215,7 @@ namespace TrashBash
             }
 
 
-            //Load content for every projectile in the list
+            //Load content for every projectile in the list and then update them
             foreach (PlayerProjectile proj in PlayerProjectile)
             {
                 if (proj.ContentLoaded == false)
@@ -221,17 +223,8 @@ namespace TrashBash
                     proj.LoadContent(content);
                     proj.ContentLoaded = true;
                 }
-
-            }
-
-            //Update each projectile in list
-            foreach (PlayerProjectile proj in PlayerProjectile)
-            {
                 proj.Update(gameTime);
-            }
 
-            foreach (PlayerProjectile proj in PlayerProjectile)
-            {
                 if (proj.Position.X > proj.StartPosition.X + ProjRange || proj.Position.X < proj.StartPosition.X - ProjRange || proj.Position.Y > proj.StartPosition.Y + ProjRange || proj.Position.Y < proj.StartPosition.Y - ProjRange)
                 {
                     //add the projectile to a remove list

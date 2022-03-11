@@ -27,7 +27,6 @@ namespace TrashBash
         private Texture2D fence;
         private Texture2D fenceVerticle;
         private Texture2D title;
-        private Texture2D raccoon;
         private Texture2D healthCan;
         private Texture2D halfHealthCan;
         private Texture2D emptyHealthCan;
@@ -43,8 +42,11 @@ namespace TrashBash
 
         private State gameState = 0;
 
-        public List<TrashSpiderSprite> Spiders = new List<TrashSpiderSprite>();
+        public List<TrashSpiderSprite> livingSpiders = new List<TrashSpiderSprite>();
         private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
+
+        public List<RaccoonSprite> livingRaccoons = new List<RaccoonSprite>();
+        private List<RaccoonSprite> deadRaccoons = new List<RaccoonSprite>();
 
         private List<FenceTop> fenceTops = new List<FenceTop>();
         private List<FenceBottom> fenceBottoms = new List<FenceBottom>();
@@ -57,7 +59,7 @@ namespace TrashBash
         private int enemySpawn = 2;
         private int scaler = 0;
 
-        private GasParticleSystem gas;
+        public GasParticleSystem Gas;
 
         MouseState _priorMouse;
 
@@ -67,7 +69,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -83,8 +85,8 @@ namespace TrashBash
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
             exitBtn = new ExitBtn(new Vector2((float)(GraphicsDevice.Viewport.Width * 0.75) - 80, GraphicsDevice.Viewport.Height / 2));
 
-            gas = new GasParticleSystem(this, 20);
-            Components.Add(gas);
+            Gas = new GasParticleSystem(this, 40);
+            Components.Add(Gas);
 
             base.Initialize();
         }
@@ -142,8 +144,7 @@ namespace TrashBash
             fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
             fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
 
-            //testing fence
-            fenceSides.Add(new FenceSide(new Vector2(500, 216)));
+            
 
             foreach (FenceSide fence in fenceSides)
             {
@@ -157,7 +158,8 @@ namespace TrashBash
                 }
             }
 
-            Spiders.Add(new TrashSpiderSprite(new Vector2(1000, 300), Content));
+            livingRaccoons.Add(new RaccoonSprite(new Vector2(1000, 300), Content));
+            livingRaccoons.Add(new RaccoonSprite(new Vector2(500, 300), Content));
 
             gameState = State.Level0;
         }
@@ -231,8 +233,6 @@ namespace TrashBash
             fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
             hit = Content.Load<SoundEffect>("hit");
 
-            raccoon = Content.Load<Texture2D>("Raccoon");
-
             bossMusic = Content.Load<Song>("heavy_metal_looping");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = .1f;
@@ -242,14 +242,6 @@ namespace TrashBash
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            MouseState currentMouse = Mouse.GetState();
-            Vector2 mousePosition = new Vector2(currentMouse.X, currentMouse.Y);
-
-            if (currentMouse.LeftButton == ButtonState.Pressed && _priorMouse.LeftButton == ButtonState.Released)
-            {
-                gas.PlaceGas(mousePosition);
-            }
 
             // TODO: Add your update logic here
             player.LastMove = player.Position;
@@ -302,6 +294,85 @@ namespace TrashBash
                 }
             }
 
+            foreach (TrashSpiderSprite spider in livingSpiders)
+            {
+                spider.Update(gameTime, player);
+
+                if (spider.Health <= 0)
+                {
+                    deadSpiders.Add(spider);
+                    score++;
+                    scaler++;
+                }
+
+                if (player.Hit == false)
+                {
+                    if (player.Bounds.CollidesWith(spider.Bounds))
+                    {
+                        player.Hit = true;
+                        player.PlayerCurrentHealth--;
+                        hit.Play(.3f, 0, 0);
+                    }
+                }
+            }
+
+            foreach (RaccoonSprite raccoon in livingRaccoons)
+            {
+                raccoon.Update(gameTime, player, Gas, Content);
+
+                if (raccoon.Health <= 0)
+                {
+                    deadRaccoons.Add(raccoon);
+                    score++;
+                    scaler++;
+                }
+
+                if (player.Hit == false)
+                {
+                    if (player.Bounds.CollidesWith(raccoon.Bounds) && raccoon.Direction != RaccoonDirection.Asleep)
+                    {
+                        player.Hit = true;
+                        player.PlayerCurrentHealth--;
+                        hit.Play(.3f, 0, 0);
+                    }
+                }
+                if (player.Bounds.CollidesWith(raccoon.Bounds))
+                {
+                    player.Position = player.LastMove;
+                }
+
+                foreach(GasProjectile proj in raccoon.GasProjectile)
+                {
+                    if (player.Hit == false)
+                    {
+                        if (player.Bounds.CollidesWith(proj.Bounds))
+                        {
+                            player.Hit = true;
+                            player.PlayerCurrentHealth--;
+                            hit.Play(.3f, 0, 0);
+                        }
+                    }
+                }
+            }
+
+
+            foreach (TrashSpiderSprite spider in deadSpiders)
+            {
+                livingSpiders.Remove(spider);
+            }
+            deadSpiders.Clear();
+
+            foreach (RaccoonSprite raccoon in deadRaccoons)
+            {
+                livingRaccoons.Remove(raccoon);
+            }
+            deadRaccoons.Clear();
+
+            if (player.PlayerCurrentHealth <= 0)
+            {
+                MediaPlayer.Pause();
+                gameState = State.GameOver;
+            }
 
             if (gameState == State.MainMenu)
             {
@@ -331,47 +402,25 @@ namespace TrashBash
             
             if(gameState == State.LevelWaves)
             {
-                if(Spiders.Count < enemySpawn)
+                if(livingSpiders.Count < enemySpawn)
                 {
                     int side = rnd.Next(0, 4);
                     
                     if (side == 0)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), 0), Content));
+                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), 0), Content));
                     }
                     else if (side == 1)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
+                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
                     }
                     else if (side == 2)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), GraphicsDevice.Viewport.Height), Content));
+                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), GraphicsDevice.Viewport.Height), Content));
                     }
                     else if (side == 3)
                     {
-                        Spiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
-                    }
-                }
-
-                foreach(TrashSpiderSprite spider in Spiders)
-                {
-                    spider.Update(gameTime, player);
-
-                    if (spider.Health <= 0)
-                    {
-                        deadSpiders.Add(spider);
-                        score++;
-                        scaler++;
-                    }
-
-                    if (player.Hit == false)
-                    {
-                        if (player.Bounds.CollidesWith(spider.Bounds))
-                        {
-                            player.Hit = true;
-                            player.PlayerCurrentHealth--;
-                            hit.Play(.3f, 0, 0);
-                        }
+                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
                     }
                 }
 
@@ -384,26 +433,13 @@ namespace TrashBash
                     }
                     enemySpawn++;
                 }
-
-
-                foreach (TrashSpiderSprite spider in deadSpiders)
-                {
-                    Spiders.Remove(spider);
-                }
-                deadSpiders.Clear();
-
-                if(player.PlayerCurrentHealth <= 0)
-                {
-                    MediaPlayer.Pause();
-                    gameState = State.GameOver;
-                }
             }
 
             if(gameState == State.GameOver)
             {
                 if ((Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
-                    Spiders.Clear();
+                    livingSpiders.Clear();
                     player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, (GraphicsDevice.Viewport.Height / 2) - 30);
                     player.PlayerCurrentHealth = player.PlayerMaxHealth;
                     score = 0;
@@ -448,9 +484,14 @@ namespace TrashBash
                     fence.Draw(gameTime, _spriteBatch);
                 }
 
-                foreach (TrashSpiderSprite spider in Spiders)
+                foreach (TrashSpiderSprite spider in livingSpiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
+                }
+
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    raccoon.Draw(gameTime, _spriteBatch);
                 }
 
                 player.Draw(gameTime, _spriteBatch);
@@ -507,7 +548,7 @@ namespace TrashBash
                     fence.Draw(gameTime, _spriteBatch);
                 }
 
-                foreach (TrashSpiderSprite spider in Spiders)
+                foreach (TrashSpiderSprite spider in livingSpiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
                 }
@@ -557,7 +598,6 @@ namespace TrashBash
 
             var source = new Rectangle(4 * 64, 0, 64, 64);
             Vector2 Pos = new Vector2(300, 300);
-            _spriteBatch.Draw(raccoon, Pos, source, Color.White);
 
 
             //_spriteBatch.Draw(rat, new Vector2(100, 215), null, Color.White, 0, new Vector2(0, 0), .08f, SpriteEffects.None, 0);

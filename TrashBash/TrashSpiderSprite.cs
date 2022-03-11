@@ -121,6 +121,7 @@ namespace TrashBash
                 if (iFrameTimer > .2)
                 {
                     Hit = false;
+                    iFrameTimer -= .2;
                 }
             }
 

@@ -39,6 +39,7 @@ namespace TrashBash
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("PlayerProjectile");
+            ContentLoaded = true;
         }
 
         public void Update(GameTime gameTime)
