@@ -69,7 +69,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -158,8 +158,10 @@ namespace TrashBash
                 }
             }
 
-            livingRaccoons.Add(new RaccoonSprite(new Vector2(1000, 300), Content));
-            livingRaccoons.Add(new RaccoonSprite(new Vector2(500, 300), Content));
+            livingRaccoons.Add(new RaccoonSprite(new Vector2(1200, 100), Content));
+            livingRaccoons.Add(new RaccoonSprite(new Vector2(575, 250), Content));
+            //livingRaccoons.Add(new RaccoonSprite(new Vector2(50, 100), Content));
+            livingRaccoons.Add(new RaccoonSprite(new Vector2(50, 600), Content));
 
             gameState = State.Level0;
         }
@@ -336,10 +338,7 @@ namespace TrashBash
                         hit.Play(.3f, 0, 0);
                     }
                 }
-                if (player.Bounds.CollidesWith(raccoon.Bounds))
-                {
-                    player.Position = player.LastMove;
-                }
+               
 
                 foreach(GasProjectile proj in raccoon.GasProjectile)
                 {

@@ -18,6 +18,10 @@ namespace TrashBash
         public Vector2 EndPosition;
         private float rotation = 0;
 
+        private List<Vector2> path = new List<Vector2>();
+        private Vector2 nextPoint = new Vector2();
+        int count = 0;
+
         private GasParticleSystem gas;
 
         public bool ContentLoaded = false;
@@ -32,13 +36,20 @@ namespace TrashBash
 
         public BoundingCircle Bounds => bounds;
 
-        public GasProjectile(Vector2 startPosition, Vector2 endPosition, GasParticleSystem gas)
+        public GasProjectile(Vector2 startPosition, Vector2 endPosition, GasParticleSystem gas, Vector2 raccoonPosition)
         {
             this.Position = startPosition;
             this.StartPosition = startPosition;
             this.EndPosition = endPosition;
             EndPosition.Round();
             this.gas = gas;
+
+            for (float i = 0; i <= 1; i += 0.01f)
+            {
+                path.Add(Vector2.Hermite(startPosition, endPosition + new Vector2(-raccoonPosition.X, -(500)), endPosition, endPosition + new Vector2(-raccoonPosition.X, 500), i));   
+            }
+            nextPoint = path[count];
+            nextPoint.Round();
         }
 
         public void LoadContent(ContentManager content)
@@ -49,33 +60,43 @@ namespace TrashBash
 
         public void Update(GameTime gameTime)
         {
-            if (Position.X < EndPosition.X)
+            if (Position.X < nextPoint.X)
             {
                 Position += new Vector2(speed, 0);
             }
-            if (Position.X > EndPosition.X)
+            if (Position.X > nextPoint.X)
             {
                 Position += new Vector2(-speed, 0);
             }
-            if (Position.Y < EndPosition.Y)
+            if (Position.Y < nextPoint.Y)
             {
                 Position += new Vector2(0, speed);
             }
-            if (Position.Y > EndPosition.Y)
+            if (Position.Y > nextPoint.Y)
             {
                 Position += new Vector2(0, -speed);
             }
 
-            if(Position.X > EndPosition.X - 2 && Position.X < EndPosition.X + 2
+            if (Position.X > EndPosition.X - 2 && Position.X < EndPosition.X + 2
                 && Position.Y > EndPosition.Y - 2 && Position.Y < EndPosition.Y + 2
                 && gasFired == false)
             {
                 gas.PlaceGas(EndPosition);
-                bounds = new BoundingCircle(Position, 64);
+                //bounds = new BoundingCircle(Position, 64);
                 gasFired = true;
             }
 
-            if(gasFired)
+            if (Position.X > nextPoint.X - 2 && Position.X < nextPoint.X + 2
+            && Position.Y > nextPoint.Y - 2 && Position.Y < nextPoint.Y + 2
+            && gasFired == false && count < path.Count-1)
+            {
+                count++;
+                nextPoint = path[count];
+                nextPoint.Round();
+            }
+
+
+            if (gasFired)
             {
                 activeTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -94,6 +115,12 @@ namespace TrashBash
             if(!gasFired)
             {
                 spriteBatch.Draw(texture, Position, null, Color.White, (float)rotation, new Vector2(5, 7), 1, SpriteEffects.None, 0);
+            }
+
+            //draws the curve of the projectile
+            for (int i = 0; i < path.Count ; i ++)
+            {
+                //spriteBatch.Draw(texture, path[i], null, Color.White, (float)rotation, new Vector2(5, 7), 1, SpriteEffects.None, 0);
             }
         }
 

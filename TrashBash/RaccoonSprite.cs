@@ -142,11 +142,11 @@ namespace TrashBash
                 {
                     if(Direction == RaccoonDirection.Left)
                     {
-                        GasProjectile.Add(new GasProjectile(Position + new Vector2(13, 0), player.Position + new Vector2(32,32), gas));
+                        GasProjectile.Add(new GasProjectile(Position + new Vector2(13, 0), player.Position + new Vector2(32,32), gas, Position));
                     }
                     else if(Direction == RaccoonDirection.Right)
                     {
-                        GasProjectile.Add(new GasProjectile(Position + new Vector2(40, 0), player.Position + new Vector2(32, 32), gas));
+                        GasProjectile.Add(new GasProjectile(Position + new Vector2(40, 0), player.Position + new Vector2(32, 32), gas, Position));
                     }
                     
                     fire = false;
