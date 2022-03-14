@@ -12,7 +12,6 @@ namespace TrashBash
 
         public GasParticleSystem(Game game, int maxExplosions) : base(game, maxExplosions * 45) { }
 
-
         protected override void InitializeConstants()
         {
             textureFilename = "gas";

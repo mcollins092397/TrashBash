@@ -11,12 +11,15 @@ namespace TrashBash
 
     public enum State
     {
-        MainMenu = 0,
-        LevelWaves = 1,
-        GameOver = 2,
-        Level0 = 3
+        Level0 = 0,
+        Level1 = 1,
+        Level2 = 2,
+        Level3 = 3,
+        GameOver = 98,
+        MainMenu = 99
 
     }
+
     public class TrashBash : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -24,8 +27,6 @@ namespace TrashBash
 
         private PlayerController player;
 
-        private Texture2D fence;
-        private Texture2D fenceVerticle;
         private Texture2D title;
         private Texture2D healthCan;
         private Texture2D halfHealthCan;
@@ -40,7 +41,7 @@ namespace TrashBash
 
         private SpriteFont spriteFont;
 
-        private State gameState = 0;
+        private State gameState = State.MainMenu;
 
         public List<TrashSpiderSprite> livingSpiders = new List<TrashSpiderSprite>();
         private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
@@ -52,16 +53,15 @@ namespace TrashBash
         private List<FenceBottom> fenceBottoms = new List<FenceBottom>();
         private List<FenceSide> fenceSides = new List<FenceSide>();
 
-        private Random rnd = new Random();
-
-
-        private int score = 0;
-        private int enemySpawn = 2;
-        private int scaler = 0;
-
         public GasParticleSystem Gas;
 
-        MouseState _priorMouse;
+        private bool shakeViewport = false;
+        private float shakeStartAngle = 150;
+        private float shakeRadius = 5;
+        private float shakeStart;
+
+        private List<LevelInfo> levelList = new List<LevelInfo>();
+        private int levelIndex = 0;
 
         //2d array representing the screen, used for A* pathfinding
         public int[,] Grid = new int[77,137];
@@ -71,7 +71,7 @@ namespace TrashBash
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.ApplyChanges();
@@ -88,133 +88,337 @@ namespace TrashBash
             Gas = new GasParticleSystem(this, 40);
             Components.Add(Gas);
 
+            levelList.Add(new LevelInfo(0, false));
+            levelList.Add(new LevelInfo(1, false));
+            levelList.Add(new LevelInfo(2, false));
+            levelList.Add(new LevelInfo(3, false));
+
             base.Initialize();
         }
 
-        private void InitializeLevel0()
+        private void InitializeLevelX(State level, bool clear)
         {
-            fenceBottoms.Clear();
-            fenceSides.Clear();
-            fenceTops.Clear();
-
-            fenceTops.Add(new FenceTop(new Vector2(4, 0)));
-            fenceTops.Add(new FenceTop(new Vector2(260, 0)));
-
-            fenceTops.Add(new FenceTop(new Vector2(850, 0)));
-            fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
-
-            foreach (FenceTop fence in fenceTops)
+            //level 0 needs trash bags whenever those get done
+            if(level == State.Level0)
             {
-                fence.LoadContent(Content);
-                for(int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
                 {
-                    for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width)/10); x++)
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
                     {
-                        Grid[y, x] += 10;
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
                     }
                 }
-            }
 
-            fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(516, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(772, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
-
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(516, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(772, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
 
 
-            foreach (FenceBottom fence in fenceBottoms)
-            {
-                fence.LoadContent(Content);
-                for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+
+                foreach (FenceBottom fence in fenceBottoms)
                 {
-                    for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
                     {
-                        Grid[y, x] += 10;
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
                     }
                 }
-            }
 
-            fenceSides.Add(new FenceSide(new Vector2(0, 4)));
-            fenceSides.Add(new FenceSide(new Vector2(0, 260)));
-            fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
 
-            fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
-            fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
-            fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
 
-            
 
-            foreach (FenceSide fence in fenceSides)
-            {
-                fence.LoadContent(Content);
-                for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+
+                foreach (FenceSide fence in fenceSides)
                 {
-                    for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
                     {
-                        Grid[y, x] += 10;
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
                     }
                 }
+                gameState = State.Level0;
             }
 
-            livingRaccoons.Add(new RaccoonSprite(new Vector2(1200, 100), Content));
-            livingRaccoons.Add(new RaccoonSprite(new Vector2(575, 250), Content));
-            //livingRaccoons.Add(new RaccoonSprite(new Vector2(50, 100), Content));
-            livingRaccoons.Add(new RaccoonSprite(new Vector2(50, 600), Content));
+            //level 1 needs trash bags placed with the spiders so the spiders can blend, maybe wont put spiders in random spots once they are added
+            if(level == State.Level1)
+            {
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
 
-            gameState = State.Level0;
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+
+
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                if(!clear)
+                {
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                }
+                
+
+                MediaPlayer.Play(bossMusic);
+
+                gameState = State.Level1;
+            }
+
+            //level 2 will introduce a raccoon along with some trash spiders
+            if (level == State.Level2)
+            {
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+
+
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+
+
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+
+                if(!clear)
+                {
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 688)), Content));
+
+                    livingRaccoons.Add(new RaccoonSprite(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content));
+                }
+                
+                gameState = State.Level2;
+            }
+
+            if (level == State.Level3)
+            {
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+
+
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+
+
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.LoadContent(Content);
+                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    {
+                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
+                    }
+                }
+
+
+                if (!clear)
+                {
+                    livingRaccoons.Add(new RaccoonSprite(new Vector2(80, 90), Content));
+                    livingRaccoons.Add(new RaccoonSprite(new Vector2(80, 670), Content));
+                    livingRaccoons.Add(new RaccoonSprite(new Vector2(1270, 90), Content));
+                    livingRaccoons.Add(new RaccoonSprite(new Vector2(1270, 670), Content));
+                }
+
+                gameState = State.Level3;
+            }
+
+            if (level == State.GameOver)
+            {
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+                gameState = State.GameOver;
+            }
         }
 
-        private void InitializeLevel1()
-        {
-            fenceBottoms.Clear();
-            fenceSides.Clear();
-            fenceTops.Clear();
 
-            fenceTops.Add(new FenceTop(new Vector2(4, 0)));
-            fenceTops.Add(new FenceTop(new Vector2(260, 0)));
-
-            fenceTops.Add(new FenceTop(new Vector2(850, 0)));
-            fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
-
-            foreach(FenceTop fence in fenceTops)
-            {
-                fence.LoadContent(Content);
-            }
-
-            fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
-
-            fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
-            fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
-
-            
-
-            foreach(FenceBottom fence in fenceBottoms)
-            {
-                fence.LoadContent(Content);
-            }
-
-            fenceSides.Add(new FenceSide(new Vector2(0, 4)));
-            fenceSides.Add(new FenceSide(new Vector2(0, 260)));
-            fenceSides.Add(new FenceSide(new Vector2(0, 516)));
-
-            fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
-            fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
-            fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
-
-            foreach (FenceSide fence in fenceSides)
-            {
-                fence.LoadContent(Content);
-            }
-
-            MediaPlayer.Play(bossMusic);
-
-            gameState = State.LevelWaves;
-        }
-
-        
 
         protected override void LoadContent()
         {
@@ -231,8 +435,6 @@ namespace TrashBash
             emptyHealthCan = Content.Load<Texture2D>("HealthCans(hud)/TransparentCan");
             halfHealthCan = Content.Load<Texture2D>("HealthCans(hud)/HalfCan");
             background = Content.Load<Texture2D>("background");
-            fence = Content.Load<Texture2D>("Fence");
-            fenceVerticle = Content.Load<Texture2D>("FenceVerticle");
             hit = Content.Load<SoundEffect>("hit");
 
             bossMusic = Content.Load<Song>("heavy_metal_looping");
@@ -245,12 +447,22 @@ namespace TrashBash
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            //player update, check if player health is 0 to end game
+            #region
             player.LastMove = player.Position;
             player.Update(gameTime, Content);
 
-            //player.Color = Color.White;
+            if (player.PlayerCurrentHealth <= 0)
+            {
+                MediaPlayer.Pause();
+                InitializeLevelX(State.GameOver, true);
+            }
 
+            //player.Color = Color.White;
+            #endregion
+
+            //check for fence collisions and move player back if they occur
+            #region
             foreach (FenceTop fence in fenceTops)
             {
                 if (player.Bounds.CollidesWith(fence.Bounds))
@@ -295,7 +507,10 @@ namespace TrashBash
                     }
                 }
             }
+            #endregion
 
+            //spider update, collisions, and life track
+            #region
             foreach (TrashSpiderSprite spider in livingSpiders)
             {
                 spider.Update(gameTime, player);
@@ -303,8 +518,6 @@ namespace TrashBash
                 if (spider.Health <= 0)
                 {
                     deadSpiders.Add(spider);
-                    score++;
-                    scaler++;
                 }
 
                 if (player.Hit == false)
@@ -314,10 +527,21 @@ namespace TrashBash
                         player.Hit = true;
                         player.PlayerCurrentHealth--;
                         hit.Play(.3f, 0, 0);
+                        shakeViewport = true;
+                        shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
                     }
                 }
             }
 
+            foreach (TrashSpiderSprite spider in deadSpiders)
+            {
+                livingSpiders.Remove(spider);
+            }
+            deadSpiders.Clear();
+            #endregion
+
+            //raccoon update, collisions, and life track, gas projectile collision detection as well
+            #region
             foreach (RaccoonSprite raccoon in livingRaccoons)
             {
                 raccoon.Update(gameTime, player, Gas, Content);
@@ -325,8 +549,6 @@ namespace TrashBash
                 if (raccoon.Health <= 0)
                 {
                     deadRaccoons.Add(raccoon);
-                    score++;
-                    scaler++;
                 }
 
                 if (player.Hit == false)
@@ -336,6 +558,8 @@ namespace TrashBash
                         player.Hit = true;
                         player.PlayerCurrentHealth--;
                         hit.Play(.3f, 0, 0);
+                        shakeViewport = true;
+                        shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
                     }
                 }
                
@@ -349,30 +573,22 @@ namespace TrashBash
                             player.Hit = true;
                             player.PlayerCurrentHealth--;
                             hit.Play(.3f, 0, 0);
+                            shakeViewport = true;
+                            shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
                         }
                     }
                 }
             }
-
-
-            foreach (TrashSpiderSprite spider in deadSpiders)
-            {
-                livingSpiders.Remove(spider);
-            }
-            deadSpiders.Clear();
 
             foreach (RaccoonSprite raccoon in deadRaccoons)
             {
                 livingRaccoons.Remove(raccoon);
             }
             deadRaccoons.Clear();
+            #endregion
 
-            if (player.PlayerCurrentHealth <= 0)
-            {
-                MediaPlayer.Pause();
-                gameState = State.GameOver;
-            }
-
+            //update logic for mainmenu
+            #region
             if (gameState == State.MainMenu)
             {
                 playBtn.Color = Color.White;
@@ -380,74 +596,129 @@ namespace TrashBash
                 if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
                     playBtn.Color = Color.Red;
-                    InitializeLevel0();
+                    //player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2));
+                    InitializeLevelX(State.Level0, false);
                 }
                 if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
                     Exit();
                 }
             }
+            #endregion
 
-            
-            if(gameState == State.Level0)
+            //update logic for level 0
+            #region
+            if (gameState == State.Level0)
             {
                 if(player.Position.Y < 0)
                 {
-                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
-                    InitializeLevel1();
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 750);
+                    levelList[levelIndex].cleared = true;
+                    levelIndex++;
+                    if(levelIndex < levelList.Count)
+                    {
+                        InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
+                    }
                 }
             }
-            
-            
-            if(gameState == State.LevelWaves)
+            #endregion
+
+            //update logic for level 1
+            #region
+            if (gameState == State.Level1)
             {
-                if(livingSpiders.Count < enemySpawn)
+                if (player.Position.Y < 0)
                 {
-                    int side = rnd.Next(0, 4);
-                    
-                    if (side == 0)
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
+                    levelIndex++;
+                    if (levelIndex < levelList.Count)
                     {
-                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), 0), Content));
-                    }
-                    else if (side == 1)
-                    {
-                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(GraphicsDevice.Viewport.Width, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
-                    }
-                    else if (side == 2)
-                    {
-                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(rnd.Next(0, _graphics.PreferredBackBufferWidth), GraphicsDevice.Viewport.Height), Content));
-                    }
-                    else if (side == 3)
-                    {
-                        livingSpiders.Add(new TrashSpiderSprite(new Vector2(0, rnd.Next(0, _graphics.PreferredBackBufferHeight)), Content));
+                        levelList[levelIndex-1].cleared = true;
+                        InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
                     }
                 }
 
-                if (scaler == 10)
+                if (player.Position.Y > 768)
                 {
-                    scaler = 0;
-                    if (player.ProjFireRate > .1)
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 10);
+                    levelIndex--;
+                    if (levelIndex <= levelList.Count)
                     {
-                        player.ProjFireRate -= .1f;
+                        InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
                     }
-                    enemySpawn++;
                 }
             }
+            #endregion
 
-            if(gameState == State.GameOver)
+            //update logic for level 2
+            #region
+            if (gameState == State.Level2)
+            {
+                if (player.Position.Y < 0)
+                {
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
+                    levelIndex++;
+                    if (levelIndex < levelList.Count)
+                    {
+                        levelList[levelIndex-1].cleared = true;
+                        InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
+                    }
+                }
+                if (player.Position.Y > 768)
+                {
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 10);
+                    levelIndex--;
+                    InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
+                }
+            }
+            #endregion
+
+            //update logic for level 3
+            #region
+            if (gameState == State.Level3)
+            {
+                if (player.Position.Y < 0)
+                {
+                    //player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
+                    levelIndex++;
+                    //if (levelIndex < levelList.Count)
+                    //{
+                        levelList[levelIndex-1].cleared = true;
+                        //InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
+                        InitializeLevelX(State.GameOver, false);
+                        gameState = State.GameOver;
+                    //}
+                }
+                if (player.Position.Y > 768)
+                {
+                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 10);
+                    levelIndex--;
+                    InitializeLevelX((State)levelList[levelIndex].levelNum, levelList[levelIndex].cleared);
+                }
+            }
+            #endregion
+
+            //update logic for game over screen
+            #region
+            if (gameState == State.GameOver)
             {
                 if ((Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
                     livingSpiders.Clear();
                     player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, (GraphicsDevice.Viewport.Height / 2) - 30);
                     player.PlayerCurrentHealth = player.PlayerMaxHealth;
-                    score = 0;
-                    scaler = 0;
-                    enemySpawn = 2;
                     player.ProjFireRate = .75f;
-                    InitializeLevel1();
+                    levelIndex = 0;
+
+                    for(int i = 0; i < levelList.Count; i++)
+                    {
+                        levelList[i].cleared = false;
+                    }
+
+                    InitializeLevelX(State.Level0, false);
                 }
             }
+            #endregion
 
             base.Update(gameTime);
         }
@@ -456,8 +727,25 @@ namespace TrashBash
         {
             GraphicsDevice.Clear(Color.BurlyWood);
 
+            Vector2 offset = new Vector2(0, 0);
+            
+            if(shakeViewport)
+            {
+                offset = new Vector2((float)(Math.Sin(shakeStartAngle) * shakeRadius), (float)(Math.Cos(shakeStartAngle) * shakeRadius));
+                shakeRadius -= 0.25f;
+                shakeStartAngle += (150 + RandomHelper.Next(60));
+
+                if(gameTime.TotalGameTime.TotalSeconds - shakeStart > 2 || shakeRadius <= 0)
+                {
+                    shakeViewport = false;
+                    shakeRadius = 5;
+                    shakeStartAngle = 150;
+
+                }
+            }
+
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, Matrix.CreateTranslation(offset.X, offset.Y, 0));
 
             if(gameState == State.MainMenu)
             {
@@ -468,7 +756,7 @@ namespace TrashBash
                 player.Draw(gameTime, _spriteBatch);
             }
 
-            if(gameState == State.Level0)
+            if(gameState != State.MainMenu && gameState != State.GameOver)
             {
                 _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
                 //top of screen fences
@@ -499,65 +787,6 @@ namespace TrashBash
                 int maxCans = player.PlayerMaxHealth;
                 Vector2 currentPos = new Vector2(20, 20);
                 while (maxCans > 0)
-                {
-                    if (maxCans >= 2)
-                    {
-                        _spriteBatch.Draw(emptyHealthCan, currentPos, Color.White);
-                        currentPos += new Vector2(45, 0);
-                        maxCans -= 2;
-                    }
-                }
-
-                currentPos = new Vector2(20, 20);
-                while (cans > 0)
-                {
-                    if (cans >= 2)
-                    {
-                        _spriteBatch.Draw(healthCan, currentPos, Color.White);
-                        currentPos += new Vector2(45, 0);
-                        cans -= 2;
-                    }
-                    else if (cans == 1)
-                    {
-                        _spriteBatch.Draw(halfHealthCan, currentPos, Color.White);
-                        cans--;
-                    }
-                }
-
-                //bottom of screen fences
-                foreach (FenceBottom fence in fenceBottoms)
-                {
-                    fence.Draw(gameTime, _spriteBatch);
-                }
-            }
-
-
-            if (gameState == State.LevelWaves)
-            {
-                _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
-                //top of screen fences
-                foreach (FenceTop fence in fenceTops)
-                {
-                    fence.Draw(gameTime, _spriteBatch);
-                }
-
-                //left and rigth side fences
-                foreach (FenceSide fence in fenceSides)
-                {
-                    fence.Draw(gameTime, _spriteBatch);
-                }
-
-                foreach (TrashSpiderSprite spider in livingSpiders)
-                {
-                    spider.Draw(gameTime, _spriteBatch);
-                }
-                //_spriteBatch.DrawString(spriteFont, "Health: " + player.PlayerCurrentHealth + "/" + player.PlayerMaxHealth + "\nScore: " + score, new Vector2(20, 20), Color.White);
-                player.Draw(gameTime, _spriteBatch);
-
-                int cans = player.PlayerCurrentHealth;
-                int maxCans = player.PlayerMaxHealth;
-                Vector2 currentPos = new Vector2(20, 20);
-                while(maxCans > 0)
                 {
                     if (maxCans >= 2)
                     {

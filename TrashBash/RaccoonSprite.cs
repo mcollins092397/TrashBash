@@ -198,6 +198,12 @@ namespace TrashBash
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+
+            foreach (GasProjectile proj in GasProjectile)
+            {
+                proj.Draw(gameTime, spriteBatch);
+            }
+
             //get spiderss animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -225,12 +231,6 @@ namespace TrashBash
                 
 
                 animationTimer -= 0.2;
-            }
-
-
-            foreach (GasProjectile proj in GasProjectile)
-            {
-                    proj.Draw(gameTime, spriteBatch);
             }
 
             //draw spider based on what frame it is in

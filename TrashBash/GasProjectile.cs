@@ -82,7 +82,7 @@ namespace TrashBash
                 && gasFired == false)
             {
                 gas.PlaceGas(EndPosition);
-                //bounds = new BoundingCircle(Position, 64);
+                bounds = new BoundingCircle(Position, 64);
                 gasFired = true;
             }
 
@@ -114,7 +114,7 @@ namespace TrashBash
         {
             if(!gasFired)
             {
-                spriteBatch.Draw(texture, Position, null, Color.White, (float)rotation, new Vector2(5, 7), 1, SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, Position, null, Color.White, (float)rotation, new Vector2(5, 7), 1, SpriteEffects.None, 1);
             }
 
             //draws the curve of the projectile
