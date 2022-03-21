@@ -6,13 +6,17 @@ namespace TrashBash
 {
     public class LevelInfo
     {
-        public int levelNum;
-        public bool cleared;
+        public int LevelNum;
+        public bool Cleared;
+        public bool Shop;
+        public bool ItemRoom;
 
-        public LevelInfo(int levelNum, bool cleared)
+        public LevelInfo(int levelNum, bool cleared, bool shop, bool itemRoom)
         {
-            this.cleared = cleared;
-            this.levelNum = levelNum;
+            this.Cleared = cleared;
+            this.LevelNum = levelNum;
+            this.Shop = shop;
+            this.ItemRoom = itemRoom;
         }
     }
 }

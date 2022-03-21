@@ -100,7 +100,7 @@ namespace TrashBash
             {
                 activeTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                if(activeTimer > 2)
+                if(activeTimer > 2.4)
                 {
                     delete = true;
                 }

@@ -10,6 +10,9 @@ using Microsoft.Xna.Framework.Media;
 
 namespace TrashBash
 {
+    /// <summary>
+    /// enumerator representing the current direction that the raccoon is facing
+    /// </summary>
     public enum RaccoonDirection
     {
         Right = 0,
@@ -37,6 +40,7 @@ namespace TrashBash
         //the raccoons bounds
         private BoundingCircle bounds;
 
+        //getter for the raccoon bounds
         public BoundingCircle Bounds => bounds;
 
         //raccons health
@@ -51,11 +55,15 @@ namespace TrashBash
         //direction the raccoon is looking when throwing
         public RaccoonDirection Direction = RaccoonDirection.Asleep;
 
+        //variables used to help decide if the raccoon is currently throwing or not
         private bool throwing = false;
         private double throwWaitTimer = 0;
+
+        //random number representing the raccoon popup time
         private float rand = RandomHelper.NextFloat(1.0f, 5.0f);
         private bool fire = false;
 
+        //lists representing the gas projectiles currently displayed and those deleted
         public List<GasProjectile> GasProjectile = new List<GasProjectile>();
         public List<GasProjectile> GasProjectileRemove = new List<GasProjectile>();
 
@@ -86,13 +94,16 @@ namespace TrashBash
             hitSound = content.Load<SoundEffect>("raccoonHit");
         }
 
-        /// <summary>
-        /// updates the raccoon
-        /// </summary>
-        /// <param name="gameTime">gametime</param>
-        /// <param name="player">player object passed from main</param>
+/// <summary>
+/// update loop for the raccoon
+/// </summary>
+/// <param name="gameTime">gametime object </param>
+/// <param name="player">player object</param>
+/// <param name="gas">the gas particle system that manages the gas explosion</param>
+/// <param name="content">content manager</param>
         public void Update(GameTime gameTime, PlayerController player, GasParticleSystem gas, ContentManager content)
         {
+            //check if the raccoon was hit by a player projectile. Only take damage if the raccoon is currently throwing a bomb
             foreach (PlayerProjectile proj in player.PlayerProjectile)
             {
                 if (proj.Bounds.CollidesWith(Bounds) && throwing)
@@ -108,11 +119,13 @@ namespace TrashBash
                 }
             }
 
+            //reset color if no longer in i-frames
             if (Hit == false)
             {
                 Color = Color.White;
             }
 
+            //set i-frames and take damage when hit
             if (Hit)
             {
                 iFrameTimer += gameTime.ElapsedGameTime.TotalSeconds;
@@ -127,8 +140,11 @@ namespace TrashBash
 
             if(throwing)
             {
+                //set bounds to be bigger when throwing to reflect the raccoon coming out of the pile
                 bounds.Radius = 32;
                 bounds.Center = Position + new Vector2(32, 32);
+
+                //check if the player is on the left or the right and adjust the raccoon sprite accordingly
                 if(player.Position.X > Position.X)
                 {
                     Direction = RaccoonDirection.Right;
@@ -138,6 +154,7 @@ namespace TrashBash
                     Direction = RaccoonDirection.Left;
                 }
 
+                //throw a can with different spawn points based on which direction the raccoon is facing
                 if (fire)
                 {
                     if(Direction == RaccoonDirection.Left)
@@ -149,14 +166,20 @@ namespace TrashBash
                         GasProjectile.Add(new GasProjectile(Position + new Vector2(40, 0), player.Position + new Vector2(32, 32), gas, Position));
                     }
                     
+                    //after firing set to false so the cycle resets
                     fire = false;
                 }
             }
             else
             {
+                //if not ready to throw shrink bounds to represent the raccoon being in the pile
                 bounds.Radius = 20;
                 bounds.Center = Position + new Vector2(32, 40);
+
+                //set direction to asleep
                 Direction = RaccoonDirection.Asleep;
+
+                //progress wait timer until a random amount of time has passed, then the raccoon will pop out and throw
                 throwWaitTimer += gameTime.ElapsedGameTime.TotalSeconds;
                 if (throwWaitTimer > rand)
                 {
@@ -169,13 +192,17 @@ namespace TrashBash
             //Load content for every projectile in the list and then update them
             foreach (GasProjectile proj in GasProjectile)
             {
+                //load content if it hasnt been done for that projectile
                 if (proj.ContentLoaded == false)
                 {
                     proj.LoadContent(content);
                     proj.ContentLoaded = true;
                 }
+
+                //update each projectile
                 proj.Update(gameTime);
 
+                //remove all projectiles with the remove tag flipped
                 if (proj.delete)
                 {
                     GasProjectileRemove.Add(proj);
@@ -198,13 +225,13 @@ namespace TrashBash
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-
+            //draw each projectile
             foreach (GasProjectile proj in GasProjectile)
             {
                 proj.Draw(gameTime, spriteBatch);
             }
 
-            //get spiderss animation frame
+            //get raccoons animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             if (animationTimer > .2)
@@ -213,15 +240,15 @@ namespace TrashBash
                 {
                     animationFrame++;
 
+                    if (animationFrame == 5)
+                    {
+                        fire = true;
+                    }
+
                     if (animationFrame > 8)
                     {
                         animationFrame = 0;
                         throwing = false;
-                    }
-
-                    if(animationFrame == 5)
-                    {
-                        fire = true;
                     }
                 }
                 else
