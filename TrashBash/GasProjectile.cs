@@ -14,9 +14,14 @@ namespace TrashBash
         private float speed = 2.0f;
         public Vector2 Position;
         private Texture2D texture;
+        private Texture2D warningTexture;
         public Vector2 StartPosition;
         public Vector2 EndPosition;
         private float rotation = 0;
+
+        private double animationTimer;
+        private short animationFrame;
+
 
         private List<Vector2> path = new List<Vector2>();
         private Vector2 nextPoint = new Vector2();
@@ -27,6 +32,8 @@ namespace TrashBash
         public bool ContentLoaded = false;
 
         private bool gasFired;
+
+        private bool drawWarning = true;
 
         private BoundingCircle bounds;
 
@@ -56,6 +63,7 @@ namespace TrashBash
         {
             texture = content.Load<Texture2D>("GasCan");
             ContentLoaded = true;
+            warningTexture = content.Load<Texture2D>("warning");
         }
 
         public void Update(GameTime gameTime)
@@ -98,6 +106,7 @@ namespace TrashBash
 
             if (gasFired)
             {
+                drawWarning = false;
                 activeTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 if(activeTimer > 2.4)
@@ -105,6 +114,7 @@ namespace TrashBash
                     delete = true;
                 }
             }
+
 
 
             rotation += .1f;
@@ -115,6 +125,26 @@ namespace TrashBash
             if(!gasFired)
             {
                 spriteBatch.Draw(texture, Position, null, Color.White, (float)rotation, new Vector2(5, 7), 1, SpriteEffects.None, 1);
+            }
+
+            if(drawWarning)
+            {
+                animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (animationTimer > .5)
+                {
+                    animationFrame++;
+
+                    if(animationFrame > 1)
+                    {
+                        animationFrame = 0;
+                    }
+
+                    animationTimer -= .5;
+                }
+
+                var source = new Rectangle(animationFrame * 64, 0, 64, 64);
+                spriteBatch.Draw(warningTexture, EndPosition - new Vector2(32,32), source, Color.White);
             }
 
             //draws the curve of the projectile
