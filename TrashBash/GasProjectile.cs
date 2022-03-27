@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using TrashBash.Collisions;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace TrashBash
 {
@@ -22,6 +24,7 @@ namespace TrashBash
         private double animationTimer;
         private short animationFrame;
 
+        private SoundEffect sound;
 
         private List<Vector2> path = new List<Vector2>();
         private Vector2 nextPoint = new Vector2();
@@ -64,6 +67,7 @@ namespace TrashBash
             texture = content.Load<Texture2D>("GasCan");
             ContentLoaded = true;
             warningTexture = content.Load<Texture2D>("warning");
+            sound = content.Load<SoundEffect>("gasSound");
         }
 
         public void Update(GameTime gameTime)
@@ -89,6 +93,7 @@ namespace TrashBash
                 && Position.Y > EndPosition.Y - 2 && Position.Y < EndPosition.Y + 2
                 && gasFired == false)
             {
+                sound.Play(.2f, 0, 0);
                 gas.PlaceGas(EndPosition);
                 bounds = new BoundingCircle(Position, 64);
                 gasFired = true;
@@ -118,6 +123,11 @@ namespace TrashBash
 
 
             rotation += .1f;
+        }
+
+        public void ClearGas()
+        {
+            gas.ClearGas();
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

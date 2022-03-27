@@ -134,6 +134,30 @@
 /processorParam:TextureFormat=Color
 /build:GasCan.png
 
+#begin gasSound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:gasSound.mp3
+
+#begin GateClosed.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:GateClosed.png
+
+#begin gateOpen.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:gateOpen.mp3
+
 #begin gunshot.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

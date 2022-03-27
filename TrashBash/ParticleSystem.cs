@@ -53,7 +53,7 @@ namespace TrashBash
         /// <summary>
         /// The collection of particles 
         /// </summary>
-        Particle[] particles;
+        public Particle[] Particles;
 
         /// <summary>
         /// A Queue containing indices of unused particles in the Particles array
@@ -104,11 +104,11 @@ namespace TrashBash
         public ParticleSystem(Game game, int maxParticles) : base(game)
         {
             // Create our particles
-            particles = new Particle[maxParticles];
+            Particles = new Particle[maxParticles];
             freeParticles = new Queue<int>(maxParticles);
-            for (int i = 0; i < particles.Length; i++)
+            for (int i = 0; i < Particles.Length; i++)
             {
-                particles[i].Initialize(Vector2.Zero);
+                Particles[i].Initialize(Vector2.Zero);
                 freeParticles.Enqueue(i);
             }
             // Run the InitializeConstants hook
@@ -204,16 +204,16 @@ namespace TrashBash
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // go through all of the particles...
-            for (int i = 0; i < particles.Length; i++)
+            for (int i = 0; i < Particles.Length; i++)
             {
 
-                if (particles[i].Active)
+                if (Particles[i].Active)
                 {
                     // ... and if they're active, update them.
-                    UpdateParticle(ref particles[i], dt);
+                    UpdateParticle(ref Particles[i], dt);
                     // if that update finishes them, put them onto the free particles
                     // queue.
-                    if (!particles[i].Active)
+                    if (!Particles[i].Active)
                     {
                         freeParticles.Enqueue(i);
                     }
@@ -233,7 +233,7 @@ namespace TrashBash
             // initializeConstants
             spriteBatch.Begin(blendState: blendState);
 
-            foreach (Particle p in particles)
+            foreach (Particle p in Particles)
             {
                 // skip inactive particles
                 if (!p.Active)
@@ -271,7 +271,7 @@ namespace TrashBash
             {
                 // grab a particle from the freeParticles queue, and Initialize it.
                 int index = freeParticles.Dequeue();
-                InitializeParticle(ref particles[index], where);
+                InitializeParticle(ref Particles[index], where);
             }
         }
 
@@ -294,7 +294,7 @@ namespace TrashBash
             {
                 // grab a particle from the freeParticles queue, and Initialize it.
                 int index = freeParticles.Dequeue();
-                InitializeParticle(ref particles[index], RandomHelper.RandomPosition(where));
+                InitializeParticle(ref Particles[index], RandomHelper.RandomPosition(where));
             }
         }
 

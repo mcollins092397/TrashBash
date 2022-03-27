@@ -46,7 +46,10 @@ namespace TrashBash
 
         //the spiders default health. Starting at 2 initially but may increase once items are added into the game,
         //may also have this scale based on lvl
-        public double Health = 2;
+        public double Health = 3;
+
+        //spider move speed
+        private float moveSpeed = 1.2f;
 
         //used to keep track of the spiders invulnerability frames after being hit. May remove later so that higher fire rate feels good
         private double iFrameTimer = 0;
@@ -110,21 +113,21 @@ namespace TrashBash
             {
                 if (Position.X < player.Position.X)
                 {
-                    Position += new Vector2(1, 0);
+                    Position += new Vector2(moveSpeed, 0);
                     Direction = SpiderDirection.Right;
                 }
                 if (Position.X > player.Position.X)
                 {
-                    Position += new Vector2(-1, 0);
+                    Position += new Vector2(-moveSpeed, 0);
                     Direction = SpiderDirection.Left;
                 }
                 if (Position.Y < player.Position.Y)
                 {
-                    Position += new Vector2(0, 1);
+                    Position += new Vector2(0, moveSpeed);
                 }
                 if (Position.Y > player.Position.Y)
                 {
-                    Position += new Vector2(0, -1);
+                    Position += new Vector2(0, -moveSpeed);
                 }
             }
 

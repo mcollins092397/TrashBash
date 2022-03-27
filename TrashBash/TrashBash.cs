@@ -15,6 +15,7 @@ namespace TrashBash
         Level1 = 1,
         Level2 = 2,
         Level3 = 3,
+        Level4 = 4,
         GameOver = 98,
         MainMenu = 99
 
@@ -42,6 +43,10 @@ namespace TrashBash
         //the hit sound effect for the player
         private SoundEffect hit;
 
+        //gate open sound effect played at end of level
+        private SoundEffect gateOpen;
+        private bool gateSoundPlayed = false;
+
         //some background music
         private Song bossMusic;
 
@@ -67,6 +72,9 @@ namespace TrashBash
         private List<FenceTop> fenceTops = new List<FenceTop>();
         private List<FenceBottom> fenceBottoms = new List<FenceBottom>();
         private List<FenceSide> fenceSides = new List<FenceSide>();
+
+        //list of gates
+        private List<GateTop> gateTops = new List<GateTop>();
 
         //the gas particle system for the gas projectiles, can probably be moved to the raccoon controller
         public GasParticleSystem Gas;
@@ -117,13 +125,20 @@ namespace TrashBash
             levelList.Add(new LevelInfo(1, false, false, false));
             levelList.Add(new LevelInfo(2, false, false, false));
             levelList.Add(new LevelInfo(3, false, false, false));
+            levelList.Add(new LevelInfo(4, false, false, false));
             //then begin adding random levels until the level count has been filled,
             //need to still add a level count variable to adjust based on what stage the player is in
-            levelList.Add(new LevelInfo(RandomHelper.Next(1,3), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
 
             //select a random level in the list of levels and set it as the stages item room/shop
-            levelList[RandomHelper.Next(1, levelList.Count)].ItemRoom = true;
-            levelList[RandomHelper.Next(1, levelList.Count)].Shop = true;
+            //levelList[RandomHelper.Next(1, levelList.Count)].ItemRoom = true;
+            //levelList[RandomHelper.Next(1, levelList.Count)].Shop = true;
 
             base.Initialize();
         }
@@ -141,6 +156,13 @@ namespace TrashBash
             if(level == State.Level0)
             #region
             {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -149,6 +171,8 @@ namespace TrashBash
                 livingSpiders.Clear();
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(260, 0)));
@@ -218,6 +242,13 @@ namespace TrashBash
             if (level == State.Level1)
             #region
             {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach(GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -226,9 +257,22 @@ namespace TrashBash
                 livingSpiders.Clear();
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                if(!clear)
+                {
+                    gateTops.Add(new GateTop(new Vector2(516, 0)));
+                    gateSoundPlayed = false;
+                }
+
+                foreach(GateTop gate in gateTops)
+                {
+                    gate.LoadContent(Content);
+                }   
 
                 fenceTops.Add(new FenceTop(new Vector2(850, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
@@ -290,6 +334,13 @@ namespace TrashBash
             if (level == State.Level2)
             #region
             {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -298,9 +349,22 @@ namespace TrashBash
                 livingSpiders.Clear();
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                if (!clear)
+                {
+                    gateTops.Add(new GateTop(new Vector2(516, 0)));
+                    gateSoundPlayed = false;
+                }
+
+                foreach (GateTop gate in gateTops)
+                {
+                    gate.LoadContent(Content);
+                }
 
                 fenceTops.Add(new FenceTop(new Vector2(850, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
@@ -386,6 +450,13 @@ namespace TrashBash
             if (level == State.Level3)
             #region
             {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -394,9 +465,21 @@ namespace TrashBash
                 livingSpiders.Clear();
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
+                gateTops.Clear();
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                if (!clear)
+                {
+                    gateTops.Add(new GateTop(new Vector2(516, 0)));
+                    gateSoundPlayed = false;
+                }
+
+                foreach (GateTop gate in gateTops)
+                {
+                    gate.LoadContent(Content);
+                }
 
                 fenceTops.Add(new FenceTop(new Vector2(850, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
@@ -474,10 +557,17 @@ namespace TrashBash
             }
             #endregion
 
-            //the game over screen presents the user the prompt to leave or reset the game
-            if (level == State.GameOver)
+            //level 4 is a ton of trash spiders placed randomly around the room
+            if (level == State.Level4)
             #region
             {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -486,6 +576,104 @@ namespace TrashBash
                 livingSpiders.Clear();
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
+
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                if (!clear)
+                {
+                    gateTops.Add(new GateTop(new Vector2(516, 0)));
+                    gateSoundPlayed = false;
+                }
+
+                foreach (GateTop gate in gateTops)
+                {
+                    gate.LoadContent(Content);
+                }
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+
+
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                if (!item)
+                {
+                    fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                }
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                if (!shop)
+                {
+                    fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                }
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                if (!clear)
+                {
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                }
+
+                gameState = State.Level4;
+            }
+            #endregion
+
+            //the game over screen presents the user the prompt to leave or reset the game
+            if (level == State.GameOver)
+            #region
+            {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
+
+
                 gameState = State.GameOver;
             }
             #endregion
@@ -504,6 +692,9 @@ namespace TrashBash
             //load player and player dmg sound
             player.LoadContent(Content);
             hit = Content.Load<SoundEffect>("hit");
+
+            //load gate open sound
+            gateOpen = Content.Load<SoundEffect>("gateOpen");
 
             //main menu content
             playBtn.LoadContent(Content);
@@ -595,6 +786,21 @@ namespace TrashBash
                     }
                 }
             }
+
+            foreach (GateTop gate in gateTops)
+            {
+                if (player.Bounds.CollidesWith(gate.Bounds))
+                {
+                    player.Position = player.LastMove;
+                }
+                foreach (PlayerProjectile proj in player.PlayerProjectile)
+                {
+                    if (proj.Bounds.CollidesWith(gate.Bounds))
+                    {
+                        player.ProjectileRemove.Add(proj);
+                    }
+                }
+            }
             #endregion
 
             //spider update, collisions, and life track
@@ -652,7 +858,7 @@ namespace TrashBash
                 }
                
 
-                foreach(GasProjectile proj in raccoon.GasProjectile)
+                foreach(GasProjectile proj in raccoon.GasProjectileActive)
                 {
                     if (player.Hit == false)
                     {
@@ -711,13 +917,24 @@ namespace TrashBash
             }
             #endregion
 
-            //update logic for level 1
+            //update logic for levels with enemies
             #region
-            if (gameState == State.Level1)
+            if (gameState != State.Level0 && gameState != State.GameOver && gameState != State.MainMenu)
             {
                 if(livingRaccoons.Count == 0 && livingSpiders.Count ==0)
                 {
                     levelList[levelIndex].Cleared = true;
+
+                    if(!gateSoundPlayed)
+                    {
+                        gateOpen.Play(.3f, 0, 0);
+                        gateSoundPlayed = true;
+                    }
+
+                    foreach (GateTop gate in gateTops)
+                    {
+                        gate.IsOpen = true;
+                    }
                 }
                 if (player.Position.Y < 0)
                 {
@@ -741,66 +958,6 @@ namespace TrashBash
                     {
                         InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom);
                     }
-                }
-            }
-            #endregion
-
-            //update logic for level 2
-            #region
-            if (gameState == State.Level2)
-            {
-                if (livingRaccoons.Count == 0 && livingSpiders.Count == 0)
-                {
-                    levelList[levelIndex].Cleared = true;
-                }
-                if (player.Position.Y < 0)
-                {
-                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
-                    levelIndex++;
-                    if (levelIndex < levelList.Count)
-                    {
-                        InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom);
-                    }
-                    else
-                    {
-                        InitializeLevelX(State.GameOver, false, false, false);
-                    }
-                }
-                if (player.Position.Y > 768)
-                {
-                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 10);
-                    levelIndex--;
-                    InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom);
-                }
-            }
-            #endregion
-
-            //update logic for level 3
-            #region
-            if (gameState == State.Level3)
-            {
-                if (livingRaccoons.Count == 0 && livingSpiders.Count == 0)
-                {
-                    levelList[levelIndex].Cleared = true;
-                }
-                if (player.Position.Y < 0)
-                {
-                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 760);
-                    levelIndex++;
-                    if (levelIndex < levelList.Count)
-                    {
-                        InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom);
-                    }
-                    else
-                    {
-                        InitializeLevelX(State.GameOver, false, false, false);
-                    }
-                }
-                if (player.Position.Y > 768)
-                {
-                    player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 10);
-                    levelIndex--;
-                    InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom);
                 }
             }
             #endregion
@@ -885,6 +1042,13 @@ namespace TrashBash
                 {
                     fence.Draw(gameTime, _spriteBatch);
                 }
+
+                //top of screen gates
+                foreach (GateTop gate in gateTops)
+                {
+                    gate.Draw(gameTime, _spriteBatch);
+                }
+
 
                 //left and rigth side fences
                 foreach (FenceSide fence in fenceSides)

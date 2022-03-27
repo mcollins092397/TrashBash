@@ -54,5 +54,15 @@ namespace TrashBash
         {
             AddParticles(where);
         }
+
+        public void ClearGas()
+        {
+            int count = 0;
+            while(count < Particles.Length)
+            {
+                Particles[count].Lifetime = 0;
+                count++;
+            }
+        }
     }
 }

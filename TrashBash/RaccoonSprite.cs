@@ -64,7 +64,7 @@ namespace TrashBash
         private bool fire = false;
 
         //lists representing the gas projectiles currently displayed and those deleted
-        public List<GasProjectile> GasProjectile = new List<GasProjectile>();
+        public List<GasProjectile> GasProjectileActive = new List<GasProjectile>();
         public List<GasProjectile> GasProjectileRemove = new List<GasProjectile>();
 
         /// <summary>
@@ -159,11 +159,11 @@ namespace TrashBash
                 {
                     if(Direction == RaccoonDirection.Left)
                     {
-                        GasProjectile.Add(new GasProjectile(Position + new Vector2(13, 0), player.Position + new Vector2(32,32), gas, Position));
+                        GasProjectileActive.Add(new GasProjectile(Position + new Vector2(13, 0), player.Position + new Vector2(32,32), gas, Position));
                     }
                     else if(Direction == RaccoonDirection.Right)
                     {
-                        GasProjectile.Add(new GasProjectile(Position + new Vector2(40, 0), player.Position + new Vector2(32, 32), gas, Position));
+                        GasProjectileActive.Add(new GasProjectile(Position + new Vector2(40, 0), player.Position + new Vector2(32, 32), gas, Position));
                     }
                     
                     //after firing set to false so the cycle resets
@@ -190,7 +190,7 @@ namespace TrashBash
             }
 
             //Load content for every projectile in the list and then update them
-            foreach (GasProjectile proj in GasProjectile)
+            foreach (GasProjectile proj in GasProjectileActive)
             {
                 //load content if it hasnt been done for that projectile
                 if (proj.ContentLoaded == false)
@@ -211,7 +211,7 @@ namespace TrashBash
 
             foreach (GasProjectile proj in GasProjectileRemove)
             {
-                GasProjectile.Remove(proj);
+                GasProjectileActive.Remove(proj);
             }
 
             GasProjectileRemove.Clear();
@@ -226,7 +226,7 @@ namespace TrashBash
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             //draw each projectile
-            foreach (GasProjectile proj in GasProjectile)
+            foreach (GasProjectile proj in GasProjectileActive)
             {
                 proj.Draw(gameTime, spriteBatch);
             }
