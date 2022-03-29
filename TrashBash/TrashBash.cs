@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 namespace TrashBash
 {
@@ -92,11 +93,12 @@ namespace TrashBash
 
         //2d array representing the screen, used for A* pathfinding
         public int[,] Grid = new int[77,137];
+        public AStarPathfinder pathfinder;
 
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -139,6 +141,10 @@ namespace TrashBash
             //select a random level in the list of levels and set it as the stages item room/shop
             //levelList[RandomHelper.Next(1, levelList.Count)].ItemRoom = true;
             //levelList[RandomHelper.Next(1, levelList.Count)].Shop = true;
+
+            //initialize pathfinder
+            pathfinder = new AStarPathfinder(Grid);
+
 
             base.Initialize();
         }
@@ -234,6 +240,7 @@ namespace TrashBash
                         }
                     }
                 }
+
                 gameState = State.Level0;
             }
 #endregion
@@ -722,6 +729,8 @@ namespace TrashBash
         /// <param name="gameTime">gametime object</param>
         protected override void Update(GameTime gameTime)
         {
+            Debug.WriteLine("In update");
+            
             //Default game exit, may remove when pause menu is added in
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -1037,6 +1046,7 @@ namespace TrashBash
             {
                 //default background
                 _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+
                 //top of screen fences
                 foreach (FenceTop fence in fenceTops)
                 {

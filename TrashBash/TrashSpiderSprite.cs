@@ -59,15 +59,19 @@ namespace TrashBash
         private bool awake = false;
         private bool awakeAnimationPlayed = false;
 
+        //pathfinder used by the spider
+        private AStarPathfinder pathfinder;
+
         /// <summary>
         /// base constructor for the spider sprite
         /// </summary>
         /// <param name="position">The position the spider will be constucted</param>
         /// <param name="content">the content manager</param>
-        public TrashSpiderSprite(Vector2 position, ContentManager content)
+        public TrashSpiderSprite(Vector2 position, ContentManager content, AStarPathfinder pathfinder)
         {
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(32, 32), 16);
+            this.pathfinder = pathfinder;
             LoadContent(content);
         }
 

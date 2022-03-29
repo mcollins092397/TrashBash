@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace TrashBash
 {
@@ -24,6 +26,8 @@ namespace TrashBash
         private static int totalRows;
         //grid size col
         private static int totalCols;
+
+        StringBuilder sb = new StringBuilder();
 
         public struct cell
         {
@@ -111,15 +115,17 @@ namespace TrashBash
             return (1 * (dx + dy) + (Math.Sqrt(2) - 2 * 1) * Math.Min(dx, dy));
         }
 
-        private void tracePath(cell[,] cellDetails, int destinationRow, int destinationCol)
+        private Stack<(int, int)> tracePath(cell[,] cellDetails, int destinationRow, int destinationCol)
         {
             int row = destinationRow;
             int col = destinationCol;
             Stack<(int, int)> Path = new Stack<(int, int)>();
+            Stack<(int, int)> temp = new Stack<(int, int)>();
 
             while (!(cellDetails[row, col].parentI == row && cellDetails[row, col].parentJ == col))
             {
                 Path.Push((row, col));
+                temp.Push((row, col));
                 int tempRow = cellDetails[row, col].parentI;
                 int tempCol = cellDetails[row, col].parentJ;
                 row = tempRow;
@@ -127,39 +133,42 @@ namespace TrashBash
             }
 
             Path.Push((row, col));
-            while(Path.Count != 0)
+            temp.Push((row, col));
+
+            while (Path.Count != 0)
             {
                 (int, int) p = Path.Pop();
-                System.Diagnostics.Debug.Write("-> " + p.Item1 + " " + p.Item2);
+                sb.Append("-> " + p.Item2 + " " + p.Item1);
+                
             }
-
-            return;
+            MessageBox.Show(sb.ToString());
+            return temp;
         }
 
-        public void aStarSearch(int startCol, int startRow, int destinationCol, int destinationRow)
+        public Stack<(int, int)> aStarSearch(int startCol, int startRow, int destinationRow, int destinationCol)
         {
             if (isValid(startRow, startCol) == false)
             {
-                System.Diagnostics.Debug.WriteLine("Source is invalid");
-                return;
+                MessageBox.Show("Source is invalid");
+                return null;
             }
 
             if (isValid(destinationRow, destinationCol) == false)
             {
-                System.Diagnostics.Debug.WriteLine("Destination is invalid");
-                return;
+                MessageBox.Show("Destination is invalid");
+                return null;
             }
 
-            if(isUnblocked(startRow, startCol) == false || isUnblocked(destinationRow, destinationCol) == false)
+            if (isUnblocked(startRow, startCol) == false || isUnblocked(destinationRow, destinationCol) == false)
             {
-                System.Diagnostics.Debug.WriteLine("Source or Destination is blocked");
-                return;
+                MessageBox.Show("Source or Destination is blocked");
+                return null;
             }
 
-            if(isDestination(startRow, startCol, destinationRow, destinationCol) == true)
+            if (isDestination(startRow, startCol, destinationRow, destinationCol) == true)
             {
-                System.Diagnostics.Debug.WriteLine("Already at destination");
-                return;
+                MessageBox.Show("Already at destination");
+                return null;
             }
 
             bool[,] closedList = new bool[totalRows, totalCols];
@@ -168,9 +177,9 @@ namespace TrashBash
 
             int i, j;
 
-            for(i = 0; i < totalRows; i++)
+            for (i = 0; i < totalRows; i++)
             {
-                for(j = 0; j < totalCols; j++)
+                for (j = 0; j < totalCols; j++)
                 {
                     cellDetails[i, j].f = double.MaxValue;
                     cellDetails[i, j].g = double.MaxValue;
@@ -195,7 +204,7 @@ namespace TrashBash
 
             bool foundDest = false;
 
-            while(openList.Count != 0)
+            while (openList.Count != 0)
             {
                 pPair p = openList[0];
                 openList.Remove(p);
@@ -203,64 +212,353 @@ namespace TrashBash
                 i = p.index.Item1;
                 j = p.index.Item2;
                 closedList[i, j] = true;
+
+                //variables to store the g, h, and f of the 8 successors
+                double gNew, hNew, fNew;
+
+                //North Successor
+                if (isValid(i - 1, j) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i - 1, j, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i - 1, j].parentI = i;
+                        cellDetails[i - 1, j].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i - 1, j] == false && isUnblocked(i - 1, j) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i - 1, j, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i - 1, j].f == float.MaxValue || cellDetails[i - 1, j].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i - 1, j)));
+
+                            cellDetails[i - 1, j].f = fNew;
+                            cellDetails[i - 1, j].g = gNew;
+                            cellDetails[i - 1, j].h = hNew;
+                            cellDetails[i - 1, j].parentI = i;
+                            cellDetails[i - 1, j].parentJ = j;
+                        }
+                    }
+                }
+
+                //South Successor
+                if (isValid(i + 1, j) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i + 1, j, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i + 1, j].parentI = i;
+                        cellDetails[i + 1, j].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i + 1, j] == false && isUnblocked(i + 1, j) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i + 1, j, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i + 1, j].f == float.MaxValue || cellDetails[i + 1, j].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i + 1, j)));
+
+                            cellDetails[i + 1, j].f = fNew;
+                            cellDetails[i + 1, j].g = gNew;
+                            cellDetails[i + 1, j].h = hNew;
+                            cellDetails[i + 1, j].parentI = i;
+                            cellDetails[i + 1, j].parentJ = j;
+                        }
+                    }
+                }
+
+                //East Successor
+                if (isValid(i, j + 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i, j + 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i, j + 1].parentI = i;
+                        cellDetails[i, j + 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i, j + 1] == false && isUnblocked(i, j + 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i, j + 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i, j + 1].f == float.MaxValue || cellDetails[i, j + 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i, j + 1)));
+
+                            cellDetails[i, j + 1].f = fNew;
+                            cellDetails[i, j + 1].g = gNew;
+                            cellDetails[i, j + 1].h = hNew;
+                            cellDetails[i, j + 1].parentI = i;
+                            cellDetails[i, j + 1].parentJ = j;
+                        }
+                    }
+                }
+                //West Successor
+                if (isValid(i, j - 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i, j - 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i, j - 1].parentI = i;
+                        cellDetails[i, j - 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i, j - 1] == false && isUnblocked(i, j - 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i, j - 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i, j - 1].f == float.MaxValue || cellDetails[i, j - 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i, j - 1)));
+
+                            cellDetails[i, j - 1].f = fNew;
+                            cellDetails[i, j - 1].g = gNew;
+                            cellDetails[i, j - 1].h = hNew;
+                            cellDetails[i, j - 1].parentI = i;
+                            cellDetails[i, j - 1].parentJ = j;
+                        }
+                    }
+                }
+                //North-east Successor
+                if (isValid(i - 1, j + 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i - 1, j + 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i - 1, j + 1].parentI = i;
+                        cellDetails[i - 1, j + 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i - 1, j + 1] == false && isUnblocked(i - 1, j + 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i - 1, j + 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i - 1, j + 1].f == float.MaxValue || cellDetails[i - 1, j + 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i - 1, j + 1)));
+
+                            cellDetails[i - 1, j + 1].f = fNew;
+                            cellDetails[i - 1, j + 1].g = gNew;
+                            cellDetails[i - 1, j + 1].h = hNew;
+                            cellDetails[i - 1, j + 1].parentI = i;
+                            cellDetails[i - 1, j + 1].parentJ = j;
+                        }
+                    }
+                }
+
+                //North-west Successor
+                if (isValid(i - 1, j - 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i - 1, j - 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i - 1, j - 1].parentI = i;
+                        cellDetails[i - 1, j - 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i - 1, j - 1] == false && isUnblocked(i - 1, j - 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i - 1, j - 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i - 1, j - 1].f == float.MaxValue || cellDetails[i - 1, j - 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i - 1, j - 1)));
+
+                            cellDetails[i - 1, j - 1].f = fNew;
+                            cellDetails[i - 1, j - 1].g = gNew;
+                            cellDetails[i - 1, j - 1].h = hNew;
+                            cellDetails[i - 1, j - 1].parentI = i;
+                            cellDetails[i - 1, j - 1].parentJ = j;
+                        }
+                    }
+                }
+
+                //South-east Successor
+                if (isValid(i + 1, j + 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i + 1, j + 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i + 1, j + 1].parentI = i;
+                        cellDetails[i + 1, j + 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i + 1, j + 1] == false && isUnblocked(i + 1, j + 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i + 1, j + 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i + 1, j + 1].f == float.MaxValue || cellDetails[i + 1, j + 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i + 1, j + 1)));
+
+                            cellDetails[i + 1, j + 1].f = fNew;
+                            cellDetails[i + 1, j + 1].g = gNew;
+                            cellDetails[i + 1, j + 1].h = hNew;
+                            cellDetails[i + 1, j + 1].parentI = i;
+                            cellDetails[i + 1, j + 1].parentJ = j;
+                        }
+                    }
+                }
+
+                //South-west Successor
+                if (isValid(i + 1, j - 1) == true)
+                {
+                    //if the cell is the destination
+                    if (isDestination(i + 1, j - 1, destinationRow, destinationCol) == true)
+                    {
+                        cellDetails[i + 1, j - 1].parentI = i;
+                        cellDetails[i + 1, j - 1].parentJ = j;
+                        MessageBox.Show("Destination is found");
+                        foundDest = true;
+                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                    }
+                    //if the cell is already on closed list or it is blocked ignore it otherwise do the following
+                    else if (closedList[i + 1, j - 1] == false && isUnblocked(i + 1, j - 1) == true)
+                    {
+                        gNew = cellDetails[i, j].g + 1;
+                        hNew = calculateHValue(i + 1, j - 1, destinationRow, destinationCol);
+                        fNew = gNew + hNew;
+
+                        //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
+                        //or
+                        //if it is on the open list already check to see if this path to that square is better using f cost as the measure
+                        if (cellDetails[i + 1, j - 1].f == float.MaxValue || cellDetails[i + 1, j - 1].f > fNew)
+                        {
+                            openList.Add(new pPair(fNew, (i + 1, j + 1)));
+
+                            cellDetails[i + 1, j - 1].f = fNew;
+                            cellDetails[i + 1, j - 1].g = gNew;
+                            cellDetails[i + 1, j - 1].h = hNew;
+                            cellDetails[i + 1, j - 1].parentI = i;
+                            cellDetails[i + 1, j - 1].parentJ = j;
+                        }
+                    }
+                }
             }
-        }
 
-        /*
-           A* start
-           f: sum of g and h
-           g: movement cost to move from the starting point to a given square on the grid following the path generated to get there
-           h: estimated movement cost to move from that given square on the grid to the final destination. Known as heuristic (smart guess) 
+            if(foundDest == false)
+            {
+                MessageBox.Show("failed to find destination");
+            }
 
-           steps:
+            return null;
 
-           initialize the open list
+                    }
+                }
 
-           initialize the closed list
+                /*
+                   A* start
+                   f: sum of g and h
+                   g: movement cost to move from the starting point to a given square on the grid following the path generated to get there
+                   h: estimated movement cost to move from that given square on the grid to the final destination. Known as heuristic (smart guess) 
 
-           put starting node on closed list and leave its f at zero
+                   steps:
 
-           while open list is not empty
-               find node with the least f on the open list, call it q
+                   initialize the open list
 
-               pop q from the open list
+                   initialize the closed list
 
-               generate q's 8 successors (the squares around q) and set their parents to q
+                   put starting node on closed list and leave its f at zero
 
-               for each successor
-                   if successor is goal 
-                       stop search
+                   while open list is not empty
+                       find node with the least f on the open list, call it q
 
-                   else
-                       compute both g and h for successor
-                       successor.g = q.g + distance between successor and q (always 1 for my grid)
-                       successor.h = distance from goal to successor (using heuristic)
-                       successor.f = successor.g + successor.h
+                       pop q from the open list
 
-                   if a node with the same position as successor is in the open list with a lower f than successor
-                       skip this successor
+                       generate q's 8 successors (the squares around q) and set their parents to q
 
-                   if a node with the same position as successor is in the closed list which has a lower f than successor
-                       skip this successor
+                       for each successor
+                           if successor is goal 
+                               stop search
 
-                   else
-                       add the node to the open list
+                           else
+                               compute both g and h for successor
+                               successor.g = q.g + distance between successor and q (always 1 for my grid)
+                               successor.h = distance from goal to successor (using heuristic)
+                               successor.f = successor.g + successor.h
 
-               end for loop
+                           if a node with the same position as successor is in the open list with a lower f than successor
+                               skip this successor
 
-           push q on the closed list
+                           if a node with the same position as successor is in the closed list which has a lower f than successor
+                               skip this successor
 
-           end while loop
+                           else
+                               add the node to the open list
+
+                       end for loop
+
+                   push q on the closed list
+
+                   end while loop
 
 
-           heuristic:
-           dx = abs(current_cell.x – goal.x)
-           dy = abs(current_cell.y – goal.y)
+                   heuristic:
+                   dx = abs(current_cell.x – goal.x)
+                   dy = abs(current_cell.y – goal.y)
 
-           h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+                   h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
 
-           where D is length of each node(usually = 1) and D2 is diagonal distance between each node (usually = sqrt(2) ). 
+                   where D is length of each node(usually = 1) and D2 is diagonal distance between each node (usually = sqrt(2) ). 
 
-           */
+                   */
     }
-}
