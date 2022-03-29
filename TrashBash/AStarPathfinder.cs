@@ -167,7 +167,7 @@ namespace TrashBash
 
             if (isDestination(startY, startX, endY, endX) == true)
             {
-                MessageBox.Show("Already at destination");
+                //MessageBox.Show("Already at destination");
                 return null;
             }
 

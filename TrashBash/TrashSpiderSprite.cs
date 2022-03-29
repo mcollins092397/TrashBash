@@ -120,7 +120,7 @@ namespace TrashBash
 
 
             //if awake start making their way towards the player's position
-            if (awakeAnimationPlayed)
+            if (awakeAnimationPlayed && path != null)
             {
                 Vector2 temp = bounds.Center;
                 temp.Round();
@@ -210,10 +210,14 @@ namespace TrashBash
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             //test
-            foreach ((int, int) p in path)
+            if(path != null)
             {
-                spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), Color.White);
+                foreach ((int, int) p in path)
+                {
+                    spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), Color.White);
+                }
             }
+            
 
             //progress the animation timer while the spider is sleeping
             if (!awake && animationTimer > .1)
