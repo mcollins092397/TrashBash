@@ -108,7 +108,7 @@ namespace TrashBash
         /// <returns>the h value of cell [row,col]</returns>
         private double calculateHValue(int row, int col, int destinationRow, int destinationCol)
         {
-            System.Diagnostics.Debug.WriteLine("\nThe path is: ");
+            //System.Diagnostics.Debug.WriteLine("\nThe path is: ");
             double dx = Math.Abs(col - destinationCol);
             double dy = Math.Abs(row - destinationRow);
 
@@ -141,31 +141,31 @@ namespace TrashBash
                 sb.Append("-> " + p.Item2 + " " + p.Item1);
                 
             }
-            MessageBox.Show(sb.ToString());
+            //MessageBox.Show(sb.ToString());
             return temp;
         }
 
-        public Stack<(int, int)> aStarSearch(int startCol, int startRow, int destinationRow, int destinationCol)
+        public Stack<(int, int)> aStarSearch(int startX, int startY, int endX, int endY)
         {
-            if (isValid(startRow, startCol) == false)
+            if (isValid(startY, startX) == false)
             {
                 MessageBox.Show("Source is invalid");
                 return null;
             }
 
-            if (isValid(destinationRow, destinationCol) == false)
+            if (isValid(endY, endX) == false)
             {
                 MessageBox.Show("Destination is invalid");
                 return null;
             }
 
-            if (isUnblocked(startRow, startCol) == false || isUnblocked(destinationRow, destinationCol) == false)
+            if (isUnblocked(startY, startX) == false || isUnblocked(endY, endX) == false)
             {
                 MessageBox.Show("Source or Destination is blocked");
                 return null;
             }
 
-            if (isDestination(startRow, startCol, destinationRow, destinationCol) == true)
+            if (isDestination(startY, startX, endY, endX) == true)
             {
                 MessageBox.Show("Already at destination");
                 return null;
@@ -189,8 +189,8 @@ namespace TrashBash
                 }
             }
 
-            i = startRow;
-            j = startCol;
+            i = startY;
+            j = startX;
 
             cellDetails[i, j].f = 0.0;
             cellDetails[i, j].g = 0.0;
@@ -220,19 +220,19 @@ namespace TrashBash
                 if (isValid(i - 1, j) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i - 1, j, destinationRow, destinationCol) == true)
+                    if (isDestination(i - 1, j, endY, endX) == true)
                     {
                         cellDetails[i - 1, j].parentI = i;
                         cellDetails[i - 1, j].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i - 1, j] == false && isUnblocked(i - 1, j) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i - 1, j, destinationRow, destinationCol);
+                        hNew = calculateHValue(i - 1, j, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -255,19 +255,19 @@ namespace TrashBash
                 if (isValid(i + 1, j) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i + 1, j, destinationRow, destinationCol) == true)
+                    if (isDestination(i + 1, j, endY, endX) == true)
                     {
                         cellDetails[i + 1, j].parentI = i;
                         cellDetails[i + 1, j].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i + 1, j] == false && isUnblocked(i + 1, j) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i + 1, j, destinationRow, destinationCol);
+                        hNew = calculateHValue(i + 1, j, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -290,19 +290,19 @@ namespace TrashBash
                 if (isValid(i, j + 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i, j + 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i, j + 1, endY, endX) == true)
                     {
                         cellDetails[i, j + 1].parentI = i;
                         cellDetails[i, j + 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i, j + 1] == false && isUnblocked(i, j + 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i, j + 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i, j + 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -324,19 +324,19 @@ namespace TrashBash
                 if (isValid(i, j - 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i, j - 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i, j - 1, endY, endX) == true)
                     {
                         cellDetails[i, j - 1].parentI = i;
                         cellDetails[i, j - 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i, j - 1] == false && isUnblocked(i, j - 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i, j - 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i, j - 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -358,19 +358,19 @@ namespace TrashBash
                 if (isValid(i - 1, j + 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i - 1, j + 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i - 1, j + 1, endY, endX) == true)
                     {
                         cellDetails[i - 1, j + 1].parentI = i;
                         cellDetails[i - 1, j + 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i - 1, j + 1] == false && isUnblocked(i - 1, j + 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i - 1, j + 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i - 1, j + 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -393,19 +393,19 @@ namespace TrashBash
                 if (isValid(i - 1, j - 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i - 1, j - 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i - 1, j - 1, endY, endX) == true)
                     {
                         cellDetails[i - 1, j - 1].parentI = i;
                         cellDetails[i - 1, j - 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i - 1, j - 1] == false && isUnblocked(i - 1, j - 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i - 1, j - 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i - 1, j - 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -428,19 +428,19 @@ namespace TrashBash
                 if (isValid(i + 1, j + 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i + 1, j + 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i + 1, j + 1, endY, endX) == true)
                     {
                         cellDetails[i + 1, j + 1].parentI = i;
                         cellDetails[i + 1, j + 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i + 1, j + 1] == false && isUnblocked(i + 1, j + 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i + 1, j + 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i + 1, j + 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell
@@ -463,19 +463,19 @@ namespace TrashBash
                 if (isValid(i + 1, j - 1) == true)
                 {
                     //if the cell is the destination
-                    if (isDestination(i + 1, j - 1, destinationRow, destinationCol) == true)
+                    if (isDestination(i + 1, j - 1, endY, endX) == true)
                     {
                         cellDetails[i + 1, j - 1].parentI = i;
                         cellDetails[i + 1, j - 1].parentJ = j;
-                        MessageBox.Show("Destination is found");
+                        //MessageBox.Show("Destination is found");
                         foundDest = true;
-                        return tracePath(cellDetails, destinationRow, destinationCol); ;
+                        return tracePath(cellDetails, endY, endX); ;
                     }
                     //if the cell is already on closed list or it is blocked ignore it otherwise do the following
                     else if (closedList[i + 1, j - 1] == false && isUnblocked(i + 1, j - 1) == true)
                     {
                         gNew = cellDetails[i, j].g + 1;
-                        hNew = calculateHValue(i + 1, j - 1, destinationRow, destinationCol);
+                        hNew = calculateHValue(i + 1, j - 1, endY, endX);
                         fNew = gNew + hNew;
 
                         //if not on open list add to open list, make current square the parent of this square, record f g and h cost of the cell

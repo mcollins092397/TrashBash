@@ -49,7 +49,7 @@ namespace TrashBash
         public double Health = 3;
 
         //spider move speed
-        private float moveSpeed = 1.2f;
+        private float moveSpeed = 1f;
 
         //used to keep track of the spiders invulnerability frames after being hit. May remove later so that higher fire rate feels good
         private double iFrameTimer = 0;
@@ -59,8 +59,10 @@ namespace TrashBash
         private bool awake = false;
         private bool awakeAnimationPlayed = false;
 
-        //pathfinder used by the spider
-        private AStarPathfinder pathfinder;
+        AStarPathfinder pathfinder;
+        Stack<(int, int)> path;
+
+        private Texture2D test;
 
         /// <summary>
         /// base constructor for the spider sprite
@@ -72,6 +74,7 @@ namespace TrashBash
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(32, 32), 16);
             this.pathfinder = pathfinder;
+            path = new Stack<(int, int)>();
             LoadContent(content);
         }
 
@@ -90,6 +93,8 @@ namespace TrashBash
             texture = content.Load<Texture2D>("TrashSpiderLeftRight");
             bounds = new BoundingCircle(Position + new Vector2(32, 32), 16);
             bagHit = content.Load<SoundEffect>("BagHit");
+
+            test = content.Load<Texture2D>("EnemyProjectile");
         }
 
         /// <summary>
@@ -99,6 +104,8 @@ namespace TrashBash
         /// <param name="player">the player object from main</param>
         public void Update(GameTime gameTime, PlayerController player)
         {
+            path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)player.Bounds.X / 10, (int)player.Bounds.Y / 10);
+
             //reset the spider color if it is not currently being hit
             if (Hit == false)
             {
@@ -115,28 +122,53 @@ namespace TrashBash
             //if awake start making their way towards the player's position
             if (awakeAnimationPlayed)
             {
-                if (Position.X < player.Position.X)
+                Vector2 temp = bounds.Center;
+                temp.Round();
+
+                if (temp.X > (float)path.Peek().Item2*10 - 10 && temp.X < (float)path.Peek().Item2*10 + 10
+                && temp.Y > (float)path.Peek().Item1*10 - 10 && temp.Y < (float)path.Peek().Item1*10 + 10
+                && path.Count > 0)
+                {
+                    path.Pop();
+                }
+                if (Bounds.Center.X < path.Peek().Item2*10)
                 {
                     Position += new Vector2(moveSpeed, 0);
                     Direction = SpiderDirection.Right;
                 }
-                if (Position.X > player.Position.X)
+                if (Bounds.Center.X > path.Peek().Item2*10)
                 {
                     Position += new Vector2(-moveSpeed, 0);
                     Direction = SpiderDirection.Left;
                 }
-                if (Position.Y < player.Position.Y)
+                if (Bounds.Center.Y < path.Peek().Item1*10)
                 {
                     Position += new Vector2(0, moveSpeed);
                 }
-                if (Position.Y > player.Position.Y)
+                if (Bounds.Center.Y > path.Peek().Item1*10)
                 {
                     Position += new Vector2(0, -moveSpeed);
                 }
+
+                //update the bounds
+                bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
+                /*
+                if (Position.X > EndPosition.X - 2 && Position.X < EndPosition.X + 2
+                    && Position.Y > EndPosition.Y - 2 && Position.Y < EndPosition.Y + 2
+                    && gasFired == false)
+                {
+                    sound.Play(.2f, 0, 0);
+                    gas.PlaceGas(EndPosition);
+                    bounds = new BoundingCircle(Position, 64);
+                    gasFired = true;
+                }
+                */
+                
+
+                
             }
 
-            //update the bounds
-            bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
+
 
             //when the spider is hit set the iframe and change the spider to be red until they have recovered
             if(Hit)
@@ -177,8 +209,14 @@ namespace TrashBash
             //get spiderss animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
+            //test
+            foreach ((int, int) p in path)
+            {
+                spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), Color.White);
+            }
+
             //progress the animation timer while the spider is sleeping
-            if(!awake && animationTimer > .1)
+            if (!awake && animationTimer > .1)
             {
                 animationFrame = 0;
                 animationTimer -= 0.1;

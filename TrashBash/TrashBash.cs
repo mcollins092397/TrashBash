@@ -93,7 +93,7 @@ namespace TrashBash
 
         //2d array representing the screen, used for A* pathfinding
         public int[,] Grid = new int[77,137];
-        public AStarPathfinder pathfinder;
+        AStarPathfinder pathfinder;
 
         public TrashBash()
         {
@@ -189,9 +189,9 @@ namespace TrashBash
                 foreach (FenceTop fence in fenceTops)
                 {
                     fence.LoadContent(Content);
-                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    for (int y = (int)fence.Bounds.Y / 10; y < (int)((fence.Bounds.Y + fence.Bounds.Height) / 10); y++)
                     {
-                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        for (int x = (int)fence.Bounds.X / 10; x < (int)((fence.Bounds.X + fence.Bounds.Width) / 10); x++)
                         {
                             Grid[y, x] += 10;
                         }
@@ -210,9 +210,9 @@ namespace TrashBash
                 foreach (FenceBottom fence in fenceBottoms)
                 {
                     fence.LoadContent(Content);
-                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    for (int y = (int)fence.Bounds.Y / 10; y < (int)((fence.Bounds.Y + fence.Bounds.Height) / 10); y++)
                     {
-                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        for (int x = (int)fence.Bounds.X / 10; x < (int)((fence.Bounds.X + fence.Bounds.Width) / 10); x++)
                         {
                             Grid[y, x] += 10;
                         }
@@ -223,6 +223,8 @@ namespace TrashBash
                 fenceSides.Add(new FenceSide(new Vector2(0, 260)));
                 fenceSides.Add(new FenceSide(new Vector2(0, 516)));
 
+                fenceSides.Add(new FenceSide(new Vector2(700, 260)));
+
                 fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
                 fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
                 fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
@@ -232,15 +234,16 @@ namespace TrashBash
                 foreach (FenceSide fence in fenceSides)
                 {
                     fence.LoadContent(Content);
-                    for (int y = (int)fence.Position.Y / 10; y < (int)((fence.Position.Y + fence.Height) / 10); y++)
+                    for (int y = (int)fence.Bounds.Y / 10; y < (int)((fence.Bounds.Y + fence.Bounds.Height) / 10); y++)
                     {
-                        for (int x = (int)fence.Position.X / 10; x < (int)((fence.Position.X + fence.Width) / 10); x++)
+                        for (int x = (int)fence.Bounds.X / 10; x < (int)((fence.Bounds.X + fence.Bounds.Width) / 10); x++)
                         {
                             Grid[y, x] += 10;
                         }
                     }
                 }
 
+                livingSpiders.Add(new TrashSpiderSprite(new Vector2(1200, 600), Content, pathfinder));
                 gameState = State.Level0;
             }
 #endregion
@@ -323,11 +326,11 @@ namespace TrashBash
 
                 if(!clear)
                 {
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
                 }
                 
 
@@ -443,8 +446,8 @@ namespace TrashBash
 
                 if(!clear)
                 {
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
 
                     livingRaccoons.Add(new RaccoonSprite(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content));
                 }
@@ -642,16 +645,16 @@ namespace TrashBash
 
                 if (!clear)
                 {
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
                 }
 
                 gameState = State.Level4;
@@ -729,8 +732,6 @@ namespace TrashBash
         /// <param name="gameTime">gametime object</param>
         protected override void Update(GameTime gameTime)
         {
-            Debug.WriteLine("In update");
-            
             //Default game exit, may remove when pause menu is added in
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
