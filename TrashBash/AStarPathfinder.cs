@@ -149,19 +149,19 @@ namespace TrashBash
         {
             if (isValid(startY, startX) == false)
             {
-                MessageBox.Show("Source is invalid");
+                //MessageBox.Show("Source is invalid");
                 return null;
             }
 
             if (isValid(endY, endX) == false)
             {
-                MessageBox.Show("Destination is invalid");
+                //MessageBox.Show("Destination is invalid");
                 return null;
             }
 
             if (isUnblocked(startY, startX) == false || isUnblocked(endY, endX) == false)
             {
-                MessageBox.Show("Source or Destination is blocked");
+                //MessageBox.Show("Source or Destination is blocked");
                 return null;
             }
 
@@ -497,7 +497,7 @@ namespace TrashBash
 
             if(foundDest == false)
             {
-                MessageBox.Show("failed to find destination");
+                //MessageBox.Show("failed to find destination");
             }
 
             return null;

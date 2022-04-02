@@ -17,6 +17,7 @@ namespace TrashBash
         Level2 = 2,
         Level3 = 3,
         Level4 = 4,
+        Level5 = 5,
         GameOver = 98,
         MainMenu = 99
 
@@ -95,6 +96,8 @@ namespace TrashBash
         public int[,] Grid = new int[77,137];
         AStarPathfinder pathfinder;
 
+        private Tilemap _tilemap;
+
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -128,6 +131,7 @@ namespace TrashBash
             levelList.Add(new LevelInfo(2, false, false, false));
             levelList.Add(new LevelInfo(3, false, false, false));
             levelList.Add(new LevelInfo(4, false, false, false));
+            levelList.Add(new LevelInfo(5, false, false, false));
             //then begin adding random levels until the level count has been filled,
             //need to still add a level count variable to adjust based on what stage the player is in
             levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false));
@@ -145,6 +149,7 @@ namespace TrashBash
             //initialize pathfinder
             pathfinder = new AStarPathfinder(Grid);
 
+            _tilemap = new Tilemap("map.txt");
 
             base.Initialize();
         }
@@ -169,6 +174,7 @@ namespace TrashBash
                         gas.ClearGas();
                     }
                 }
+                Array.Clear(Grid, 0, Grid.Length);
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -223,7 +229,7 @@ namespace TrashBash
                 fenceSides.Add(new FenceSide(new Vector2(0, 260)));
                 fenceSides.Add(new FenceSide(new Vector2(0, 516)));
 
-                fenceSides.Add(new FenceSide(new Vector2(700, 260)));
+                //fenceSides.Add(new FenceSide(new Vector2(700, 260)));
 
                 fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
                 fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
@@ -243,7 +249,7 @@ namespace TrashBash
                     }
                 }
 
-                livingSpiders.Add(new TrashSpiderSprite(new Vector2(1200, 600), Content, pathfinder));
+                //livingSpiders.Add(new TrashSpiderSprite(new Vector2(1200, 600), Content, pathfinder));
                 gameState = State.Level0;
             }
 #endregion
@@ -259,6 +265,7 @@ namespace TrashBash
                         gas.ClearGas();
                     }
                 }
+                Array.Clear(Grid, 0, Grid.Length);
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -351,6 +358,7 @@ namespace TrashBash
                         gas.ClearGas();
                     }
                 }
+                Array.Clear(Grid, 0, Grid.Length);
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -467,6 +475,7 @@ namespace TrashBash
                         gas.ClearGas();
                     }
                 }
+                Array.Clear(Grid, 0, Grid.Length);
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -578,6 +587,7 @@ namespace TrashBash
                         gas.ClearGas();
                     }
                 }
+                Array.Clear(Grid, 0, Grid.Length);
                 fenceBottoms.Clear();
                 fenceSides.Clear();
                 fenceTops.Clear();
@@ -661,6 +671,96 @@ namespace TrashBash
             }
             #endregion
 
+            //level 5 uses a tilemap
+            if (level == State.Level5)
+            #region
+            {
+                foreach (RaccoonSprite raccoon in livingRaccoons)
+                {
+                    foreach (GasProjectile gas in raccoon.GasProjectileActive)
+                    {
+                        gas.ClearGas();
+                    }
+                }
+                Array.Clear(Grid, 0, Grid.Length);
+                fenceBottoms.Clear();
+                fenceSides.Clear();
+                fenceTops.Clear();
+                livingRaccoons.Clear();
+                deadRaccoons.Clear();
+                livingSpiders.Clear();
+                deadSpiders.Clear();
+                player.PlayerProjectile.Clear();
+                gateTops.Clear();
+
+
+                fenceTops.Add(new FenceTop(new Vector2(4, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(260, 0)));
+
+                if (!clear)
+                {
+                    gateTops.Add(new GateTop(new Vector2(516, 0)));
+                    gateSoundPlayed = false;
+                }
+
+                foreach (GateTop gate in gateTops)
+                {
+                    gate.LoadContent(Content);
+                }
+
+                fenceTops.Add(new FenceTop(new Vector2(850, 0)));
+                fenceTops.Add(new FenceTop(new Vector2(1106, 0)));
+
+                foreach (FenceTop fence in fenceTops)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676)));
+
+                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676)));
+                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676)));
+
+
+
+                foreach (FenceBottom fence in fenceBottoms)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                fenceSides.Add(new FenceSide(new Vector2(0, 4)));
+                if (!item)
+                {
+                    fenceSides.Add(new FenceSide(new Vector2(0, 260)));
+                }
+                fenceSides.Add(new FenceSide(new Vector2(0, 516)));
+
+                fenceSides.Add(new FenceSide(new Vector2(1354, 4)));
+                if (!shop)
+                {
+                    fenceSides.Add(new FenceSide(new Vector2(1354, 260)));
+                }
+                fenceSides.Add(new FenceSide(new Vector2(1354, 515)));
+
+                foreach (FenceSide fence in fenceSides)
+                {
+                    fence.LoadContent(Content);
+                }
+
+                if (!clear)
+                {
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                }
+
+                gameState = State.Level5;
+            }
+            #endregion
+
             //the game over screen presents the user the prompt to leave or reset the game
             if (level == State.GameOver)
             #region
@@ -724,6 +824,8 @@ namespace TrashBash
             bossMusic = Content.Load<Song>("heavy_metal_looping");
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = .1f;
+
+            _tilemap.LoadContent(Content);
         }
 
         /// <summary>
@@ -1045,8 +1147,16 @@ namespace TrashBash
             //otherwise go through the lists of gameplay objects and draw them to the screen
             if(gameState != State.MainMenu && gameState != State.GameOver)
             {
-                //default background
-                _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+                if(gameState != State.Level5)
+                {
+                    //default background
+                    _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+                }
+                else
+                {
+                    _tilemap.Draw(gameTime, _spriteBatch);
+                }
+
 
                 //top of screen fences
                 foreach (FenceTop fence in fenceTops)

@@ -266,6 +266,18 @@
 /processorParam:Quality=Best
 /build:raccoonHit.mp3
 
+#begin tileset.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:tileset.png
+
 #begin TrashSpiderLeftRight.png
 /importer:TextureImporter
 /processor:TextureProcessor
