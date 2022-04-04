@@ -126,6 +126,7 @@ namespace TrashBash
             {
                 Path.Push((row, col));
                 temp.Push((row, col));
+                
                 int tempRow = cellDetails[row, col].parentI;
                 int tempCol = cellDetails[row, col].parentJ;
                 row = tempRow;

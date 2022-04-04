@@ -54,6 +54,7 @@ namespace TrashBash
         public float MovementSpeed = 2f;
         public int PlayerMaxHealth = 6;
         public int PlayerCurrentHealth;
+        public float SprintMultiply = 1.7f;
 
         public bool Hit = false;
         private float iFrameTimer;
@@ -65,6 +66,7 @@ namespace TrashBash
 
         private bool moving;
         private bool firing;
+        private bool sprinting;
 
         /// <summary>
         /// bounding volume of the sprite
@@ -96,33 +98,75 @@ namespace TrashBash
             gamePadState = GamePad.GetState(0);
             keyboardState = Keyboard.GetState();
             //Keyboard Movement
-            if (keyboardState.IsKeyDown(Keys.W))
+            if (keyboardState.IsKeyDown(Keys.W) && keyboardState.IsKeyUp(Keys.LeftShift))
             {
                 Position += new Vector2(0, -MovementSpeed);
                 Direction = Direction.Up;
                 moving = true;
             }
-            if (keyboardState.IsKeyDown(Keys.S))
+            if (keyboardState.IsKeyDown(Keys.S) && keyboardState.IsKeyUp(Keys.LeftShift))
             {
                 Position += new Vector2(0, MovementSpeed);
                 Direction = Direction.Down;
                 moving = true;
             }
-            if (keyboardState.IsKeyDown(Keys.D))
+            if (keyboardState.IsKeyDown(Keys.D) && keyboardState.IsKeyUp(Keys.LeftShift))
             {
                 Position += new Vector2(MovementSpeed, 0);
                 Direction = Direction.Right;
                 moving = true;
             }
-            if (keyboardState.IsKeyDown(Keys.A))
+            if (keyboardState.IsKeyDown(Keys.A) && keyboardState.IsKeyUp(Keys.LeftShift))
             {
                 Position += new Vector2(-MovementSpeed, 0);
                 Direction = Direction.Left;
                 moving = true;
             }
 
+            //Keyboard Sprint Movement
+            if (keyboardState.IsKeyDown(Keys.W) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                Position += new Vector2(0, -(float)(MovementSpeed * SprintMultiply));
+                Direction = Direction.Up;
+                moving = true;
+                sprinting = true;
+            }
+            if (keyboardState.IsKeyDown(Keys.S) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                Position += new Vector2(0, (float)(MovementSpeed * SprintMultiply));
+                Direction = Direction.Down;
+                moving = true;
+                sprinting = true;
+            }
+            if (keyboardState.IsKeyDown(Keys.D) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                Position += new Vector2((float)(MovementSpeed * SprintMultiply), 0);
+                Direction = Direction.Right;
+                moving = true;
+                sprinting = true;
+            }
+            if (keyboardState.IsKeyDown(Keys.A) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                Position += new Vector2(-(float)(MovementSpeed * SprintMultiply), 0);
+                Direction = Direction.Left;
+                moving = true;
+                sprinting = true;
+            }
+
             //Controller Movement
-            Position += gamePadState.ThumbSticks.Left * new Vector2(MovementSpeed, -MovementSpeed);
+
+            //if sprinting
+            if(gamePadState.IsButtonDown(Buttons.LeftTrigger) || gamePadState.IsButtonDown(Buttons.RightTrigger))
+            {
+                Position += gamePadState.ThumbSticks.Left * new Vector2((float)(MovementSpeed * SprintMultiply), -(float)(MovementSpeed * SprintMultiply));
+                sprinting = true;
+            }
+            //if walking
+            else
+            {
+                Position += gamePadState.ThumbSticks.Left * new Vector2(MovementSpeed, -MovementSpeed);
+            }
+            
             if (gamePadState.ThumbSticks.Left.Y > 0.1f)
             {
                 Direction = Direction.Up;
@@ -143,12 +187,18 @@ namespace TrashBash
                 Direction = Direction.Left;
                 moving = true;
             }
-            
+
             //check if both the gamepad and controller are not recieving movement then set to idle if so
             if (keyboardState.IsKeyUp(Keys.W) && keyboardState.IsKeyUp(Keys.A) && keyboardState.IsKeyUp(Keys.S) && keyboardState.IsKeyUp(Keys.D) && gamePadState.ThumbSticks.Left.Y == 0 && gamePadState.ThumbSticks.Left.X == 0)
             {
                 Direction = Direction.Idle;
                 moving = false;
+            }
+
+            //check if sprint key is up then set sprinting bool to false
+            if(keyboardState.IsKeyUp(Keys.LeftShift) && gamePadState.IsButtonUp(Buttons.LeftTrigger) && gamePadState.IsButtonUp(Buttons.RightTrigger))
+            {
+                sprinting = false;
             }
 
             //if the player made a movement reset sip timer
@@ -159,8 +209,8 @@ namespace TrashBash
 
 
 
-            //Check for fire commands and add projectile to list
-            if(gameTime.TotalGameTime.TotalSeconds > (lastFire + ProjFireRate))
+            //Check for fire commands and add projectile to list if not sprinting
+            if(gameTime.TotalGameTime.TotalSeconds > (lastFire + ProjFireRate) && sprinting == false)
             {
                 if (keyboardState.IsKeyDown(Keys.Up) || gamePadState.ThumbSticks.Right.Y > 0.5f)
                 {
@@ -284,6 +334,15 @@ namespace TrashBash
             {
                 animationFrame = 0;
                 animationTimer -= 0.2;
+            }
+            else if (animationTimer > .15 && sprinting == true)
+            {
+                animationFrame++;
+                if (animationFrame > 2)
+                {
+                    animationFrame = 0;
+                }
+                animationTimer -= 0.15;
             }
             else if (animationTimer >.2)
             {

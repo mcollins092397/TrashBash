@@ -49,7 +49,7 @@ namespace TrashBash
         public double Health = 3;
 
         //spider move speed
-        private float moveSpeed = 1f;
+        private float moveSpeed = 1.8f;
 
         //used to keep track of the spiders invulnerability frames after being hit. May remove later so that higher fire rate feels good
         private double iFrameTimer = 0;
@@ -140,27 +140,26 @@ namespace TrashBash
                     Vector2 temp = bounds.Center;
                     temp.Round();
 
-                
-                    if (Bounds.Center.X < path.Peek().Item2*10)
+                    if (Bounds.Center.X < path.Peek().Item2*10 + 15)
                     {
                         Position += new Vector2(moveSpeed, 0);
                         Direction = SpiderDirection.Right;
                     }
-                    if (Bounds.Center.X > path.Peek().Item2*10)
+                    if (Bounds.Center.X > path.Peek().Item2*10 - 15)
                     {
                         Position += new Vector2(-moveSpeed, 0);
                         Direction = SpiderDirection.Left;
                     }
-                    if (Bounds.Center.Y < path.Peek().Item1*10)
+                    if (Bounds.Center.Y < path.Peek().Item1*10 + 15)
                     {
                         Position += new Vector2(0, moveSpeed);
                     }
-                    if (Bounds.Center.Y > path.Peek().Item1*10)
+                    if (Bounds.Center.Y > path.Peek().Item1*10 - 15)
                     {
                         Position += new Vector2(0, -moveSpeed);
                     }
-                    if (temp.X > (float)path.Peek().Item2*10 - 10 && temp.X < (float)path.Peek().Item2*10 + 10
-                    && temp.Y > (float)path.Peek().Item1*10 - 10 && temp.Y < (float)path.Peek().Item1*10 + 10
+                    if (temp.X > (float)path.Peek().Item2 * 10 - 20 && temp.X < (float)path.Peek().Item2 * 10 + 20
+                    && temp.Y > (float)path.Peek().Item1 * 10 - 20 && temp.Y < (float)path.Peek().Item1 * 10 + 20
                     && path.Count > 0)
                     {
                         path.Pop();
