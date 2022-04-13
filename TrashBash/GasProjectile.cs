@@ -13,7 +13,7 @@ namespace TrashBash
 {
     public class GasProjectile
     {
-        private float speed = 2.0f;
+        private float speed = 3.0f;
         public Vector2 Position;
         private Texture2D texture;
         private Texture2D warningTexture;
@@ -89,8 +89,8 @@ namespace TrashBash
                 Position += new Vector2(0, -speed);
             }
 
-            if (Position.X > EndPosition.X - 2 && Position.X < EndPosition.X + 2
-                && Position.Y > EndPosition.Y - 2 && Position.Y < EndPosition.Y + 2
+            if (Position.X > EndPosition.X - 3 && Position.X < EndPosition.X + 3
+                && Position.Y > EndPosition.Y - 3 && Position.Y < EndPosition.Y + 3
                 && gasFired == false)
             {
                 sound.Play(.2f, 0, 0);
@@ -99,8 +99,8 @@ namespace TrashBash
                 gasFired = true;
             }
 
-            if (Position.X > nextPoint.X - 2 && Position.X < nextPoint.X + 2
-            && Position.Y > nextPoint.Y - 2 && Position.Y < nextPoint.Y + 2
+            if (Position.X > nextPoint.X - 3 && Position.X < nextPoint.X + 3
+            && Position.Y > nextPoint.Y - 3 && Position.Y < nextPoint.Y + 3
             && gasFired == false && count < path.Count-1)
             {
                 count++;

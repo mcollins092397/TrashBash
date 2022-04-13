@@ -66,6 +66,9 @@ namespace TrashBash
         public List<TrashSpiderSprite> livingSpiders = new List<TrashSpiderSprite>();
         private List<TrashSpiderSprite> deadSpiders = new List<TrashSpiderSprite>();
 
+        //a list of trash bags
+        public List<TrashBagSprite> trashBags = new List<TrashBagSprite>();
+
         //a list of living and dead raccoon sprites. Once they are killed they are added to the dead list and then removed
         public List<RaccoonSprite> livingRaccoons = new List<RaccoonSprite>();
         private List<RaccoonSprite> deadRaccoons = new List<RaccoonSprite>();
@@ -101,7 +104,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -184,6 +187,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
@@ -249,7 +253,7 @@ namespace TrashBash
                     }
                 }
 
-                //livingSpiders.Add(new TrashSpiderSprite(new Vector2(1200, 600), Content, pathfinder));
+                trashBags.Add(new TrashBagSprite(new Vector2(1200, 600), Content));
                 gameState = State.Level0;
             }
 #endregion
@@ -275,6 +279,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
@@ -368,6 +373,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
@@ -485,6 +491,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
                 fenceTops.Add(new FenceTop(new Vector2(260, 0)));
@@ -597,6 +604,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
@@ -692,6 +700,7 @@ namespace TrashBash
                 deadSpiders.Clear();
                 player.PlayerProjectile.Clear();
                 gateTops.Clear();
+                trashBags.Clear();
 
 
                 fenceTops.Add(new FenceTop(new Vector2(4, 0)));
@@ -919,31 +928,50 @@ namespace TrashBash
             #region
             foreach (TrashSpiderSprite spider in livingSpiders)
             {
-                spider.Update(gameTime, player);
-
-                if (spider.Health <= 0)
+                if(!spider.Dead)
                 {
-                    deadSpiders.Add(spider);
-                }
+                    spider.Update(gameTime, player);
 
-                if (player.Hit == false)
-                {
-                    if (player.Bounds.CollidesWith(spider.Bounds))
+                    if (spider.Health <= 0)
                     {
-                        player.Hit = true;
-                        player.PlayerCurrentHealth--;
-                        hit.Play(.3f, 0, 0);
-                        shakeViewport = true;
-                        shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
+                        spider.Dead = true;
+                        spider.AnimationFrame = 0;
+                        deadSpiders.Add(spider);
+                    }
+
+                    if (player.Hit == false)
+                    {
+                        if (player.Bounds.CollidesWith(spider.Bounds))
+                        {
+                            player.Hit = true;
+                            player.PlayerCurrentHealth--;
+                            hit.Play(.3f, 0, 0);
+                            shakeViewport = true;
+                            shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
+                        }
                     }
                 }
+                
             }
 
             foreach (TrashSpiderSprite spider in deadSpiders)
             {
                 livingSpiders.Remove(spider);
             }
-            deadSpiders.Clear();
+            //deadSpiders.Clear();
+            #endregion
+
+            //spider update, collisions, and life track
+            #region
+            foreach (TrashBagSprite bag in trashBags)
+            {
+                bag.Update(gameTime, player);
+
+                if (player.Bounds.CollidesWith(bag.Bounds) && bag.Health > 0)
+                {
+                    player.Position = player.LastMove;
+                }
+            }
             #endregion
 
             //raccoon update, collisions, and life track, gas projectile collision detection as well
@@ -1181,6 +1209,17 @@ namespace TrashBash
                 foreach (TrashSpiderSprite spider in livingSpiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
+                }
+
+                foreach (TrashSpiderSprite spider in deadSpiders)
+                {
+                    spider.Draw(gameTime, _spriteBatch);
+                }
+
+                //trash bags
+                foreach (TrashBagSprite bag in trashBags)
+                {
+                    bag.Draw(gameTime, _spriteBatch);
                 }
 
                 //living raccoons

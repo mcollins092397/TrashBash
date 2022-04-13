@@ -33,20 +33,24 @@ namespace TrashBash
 
         //variables keeping track of the spiders animation and texture
         private double animationTimer;
-        private short animationFrame = 0;
+        public short AnimationFrame = 0;
         private Texture2D texture;
 
         //the bounds of spider, used in collision detection
         private BoundingCircle bounds;
 
         /// <summary>
-        /// setter for the spider bounds
+        /// getter for the spider bounds
         /// </summary>
         public BoundingCircle Bounds => bounds;
 
         //the spiders default health. Starting at 2 initially but may increase once items are added into the game,
         //may also have this scale based on lvl
         public double Health = 3;
+
+        //bool gets set to true when the spider health drops to 0
+        public bool Dead = false;
+        private bool deathAnimationPlayed = false;
 
         //spider move speed
         private float moveSpeed = 1.8f;
@@ -140,21 +144,21 @@ namespace TrashBash
                     Vector2 temp = bounds.Center;
                     temp.Round();
 
-                    if (Bounds.Center.X < path.Peek().Item2*10 + 15)
+                    if (Bounds.Center.X < path.Peek().Item2*10 + 10)
                     {
                         Position += new Vector2(moveSpeed, 0);
                         Direction = SpiderDirection.Right;
                     }
-                    if (Bounds.Center.X > path.Peek().Item2*10 - 15)
+                    if (Bounds.Center.X > path.Peek().Item2*10 - 10)
                     {
                         Position += new Vector2(-moveSpeed, 0);
                         Direction = SpiderDirection.Left;
                     }
-                    if (Bounds.Center.Y < path.Peek().Item1*10 + 15)
+                    if (Bounds.Center.Y < path.Peek().Item1*10 + 10)
                     {
                         Position += new Vector2(0, moveSpeed);
                     }
-                    if (Bounds.Center.Y > path.Peek().Item1*10 - 15)
+                    if (Bounds.Center.Y > path.Peek().Item1*10 - 10)
                     {
                         Position += new Vector2(0, -moveSpeed);
                     }
@@ -166,20 +170,6 @@ namespace TrashBash
                     }
                     //update the bounds
                     bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
-                    /*
-                    if (Position.X > EndPosition.X - 2 && Position.X < EndPosition.X + 2
-                    && Position.Y > EndPosition.Y - 2 && Position.Y < EndPosition.Y + 2
-                    && gasFired == false)
-                    {
-                    sound.Play(.2f, 0, 0);
-                    gas.PlaceGas(EndPosition);
-                    bounds = new BoundingCircle(Position, 64);
-                    gasFired = true;
-                    }
-                    */
-                
-
-                
                 }
             }
             
@@ -234,51 +224,90 @@ namespace TrashBash
                 }
             }
             
-
-            //progress the animation timer while the spider is sleeping
-            if (!awake && animationTimer > .1)
+            if(!Dead)
             {
-                animationFrame = 0;
-                animationTimer -= 0.1;
-            }
-
-            //if freshly awakened play the awaken animation and then set spider direction to left
-            if(awake && awakeAnimationPlayed == false && animationTimer > .1)
-            {
-                if (animationFrame == 2 && Direction == SpiderDirection.Left)
+                //progress the animation timer while the spider is sleeping
+                if (!awake && animationTimer > .1)
                 {
-                    awakeAnimationPlayed = true;
+                    AnimationFrame = 0;
+                    animationTimer -= 0.1;
                 }
 
-                animationFrame++;
-
-                if (animationFrame > 3)
+                //if freshly awakened play the awaken animation and then set spider direction to left
+                if(awake && awakeAnimationPlayed == false && animationTimer > .1)
                 {
-                    animationFrame = 0;
-                    Direction = SpiderDirection.Left;
+                    AnimationFrame++;
+                    if (AnimationFrame == 3 && Direction == SpiderDirection.Left)
+                    {
+                        awakeAnimationPlayed = true;
+                    }
+
+                    
+
+                    if (AnimationFrame > 3)
+                    {
+                        AnimationFrame = 0;
+                        Direction = SpiderDirection.Left;
+                    }
+
+
+
+                    animationTimer -= 0.1;
                 }
 
-
-
-                animationTimer -= 0.1;
-            }
-
-            //if already awke have the spider animations progress normally
-            if (awake && awakeAnimationPlayed == true && animationTimer > .1)
-            {
-                animationFrame++;
+                //if already awke have the spider animations progress normally
+                if (awake && awakeAnimationPlayed == true && animationTimer > .1)
+                {
+                    AnimationFrame++;
                 
-                if (animationFrame > 3)
-                {
-                    animationFrame = 0;
+                    if (AnimationFrame > 3)
+                    {
+                        AnimationFrame = 0;
+                    }
+
+                    animationTimer -= 0.1;
                 }
 
-                animationTimer -= 0.1;
+                //draw spider based on what frame it is in
+                var source = new Rectangle(AnimationFrame * 64, (int)Direction * 64, 64, 64);
+                spriteBatch.Draw(texture, Position, source, Color);
+            }
+            else
+            {
+                //if freshly killed play the death animation
+                if (deathAnimationPlayed == false && animationTimer > .2)
+                {
+                    AnimationFrame++;
+
+                    if (AnimationFrame == 3)
+                    {
+                        deathAnimationPlayed = true;
+                    }
+
+                    if (AnimationFrame > 3)
+                    {
+                        AnimationFrame = 3;
+                    }
+
+
+
+                    animationTimer -= 0.2;
+                }
+                else if(deathAnimationPlayed == true && animationTimer > .2)
+                {
+                    AnimationFrame++;
+
+                    if (AnimationFrame > 3)
+                    {
+                        AnimationFrame = 2;
+                    }
+                    animationTimer -= 0.2;
+                }
+                //draw spider based on what frame it is in
+                var source = new Rectangle(AnimationFrame * 64, 3 * 64, 64, 64);
+                spriteBatch.Draw(texture, Position, source, Color);
             }
 
-            //draw spider based on what frame it is in
-            var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
-            spriteBatch.Draw(texture, Position, source, Color);
         }
 
     }
