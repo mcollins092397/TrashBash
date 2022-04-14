@@ -28,6 +28,9 @@ namespace TrashBash
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        //test for 3d cube
+        Cube cube;
+
         //the player object takes in their input and handles player projectiles
         private PlayerController player;
 
@@ -104,7 +107,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -834,6 +837,10 @@ namespace TrashBash
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = .1f;
 
+            // Create the cube
+            cube = new Cube(this);
+
+
             _tilemap.LoadContent(Content);
         }
 
@@ -846,6 +853,9 @@ namespace TrashBash
             //Default game exit, may remove when pause menu is added in
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            // update the cube 
+            //cube.Update(gameTime);
 
             //player update, check if player health is 0 to end game
             #region
@@ -1161,9 +1171,8 @@ namespace TrashBash
             //begin spritebatch drawing
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, Matrix.CreateTranslation(offset.X, offset.Y, 0));
 
-
             //if state is main menu draw main menu content
-            if(gameState == State.MainMenu)
+            if (gameState == State.MainMenu)
             {
                 _spriteBatch.Draw(title, new Vector2(70, 20), Color.White);
                 playBtn.Draw(gameTime, _spriteBatch);
@@ -1184,7 +1193,6 @@ namespace TrashBash
                 {
                     _tilemap.Draw(gameTime, _spriteBatch);
                 }
-
 
                 //top of screen fences
                 foreach (FenceTop fence in fenceTops)
@@ -1268,6 +1276,7 @@ namespace TrashBash
                 {
                     fence.Draw(gameTime, _spriteBatch);
                 }
+                
             }
 
             //if game over draw the game over text and prompt to quit/restart. May switch the restart to return to main menu instead of going right back in
@@ -1279,7 +1288,12 @@ namespace TrashBash
             //end of spritebatch draws
             _spriteBatch.End();
 
-
+            if(gameState == State.MainMenu)
+            {
+                // draw the cube
+                cube.Draw();
+            }
+            
 
             base.Draw(gameTime);
         }
