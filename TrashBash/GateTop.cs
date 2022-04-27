@@ -34,11 +34,11 @@ namespace TrashBash
             }
         }
 
-        public GateTop(Vector2 position)
+        public GateTop(Vector2 position, ContentManager content)
         {
             this.Position = position;
             this.bounds = new BoundingRectangle(position.X, position.Y, 334, 39);
-
+            LoadContent(content);
         }
 
         public void LoadContent(ContentManager content)

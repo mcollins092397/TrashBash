@@ -56,7 +56,7 @@ namespace TrashBash
 
             for (float i = 0; i <= 1; i += 0.01f)
             {
-                path.Add(Vector2.Hermite(startPosition, endPosition + new Vector2(-raccoonPosition.X, -(500)), endPosition, endPosition + new Vector2(-raccoonPosition.X, 500), i));   
+                path.Add(Vector2.Hermite(startPosition, endPosition + new Vector2(-raccoonPosition.X, -(500)), endPosition, endPosition + new Vector2(-raccoonPosition.X, 400), i));   
             }
             nextPoint = path[count];
             nextPoint.Round();
@@ -72,6 +72,26 @@ namespace TrashBash
 
         public void Update(GameTime gameTime)
         {
+
+            if (Position.X > EndPosition.X - speed && Position.X < EndPosition.X + speed
+                && Position.Y > EndPosition.Y - speed && Position.Y < EndPosition.Y + speed
+                && gasFired == false)
+            {
+                sound.Play(.2f, 0, 0);
+                gas.PlaceGas(EndPosition);
+                bounds = new BoundingCircle(Position, 64);
+                gasFired = true;
+            }
+
+            if (Position.X > nextPoint.X - speed && Position.X < nextPoint.X + speed
+            && Position.Y > nextPoint.Y - speed && Position.Y < nextPoint.Y + speed
+            && gasFired == false && count < path.Count-1)
+            {
+                count++;
+                nextPoint = path[count];
+                nextPoint.Round();
+            }
+
             if (Position.X < nextPoint.X)
             {
                 Position += new Vector2(speed, 0);
@@ -88,26 +108,6 @@ namespace TrashBash
             {
                 Position += new Vector2(0, -speed);
             }
-
-            if (Position.X > EndPosition.X - 3 && Position.X < EndPosition.X + 3
-                && Position.Y > EndPosition.Y - 3 && Position.Y < EndPosition.Y + 3
-                && gasFired == false)
-            {
-                sound.Play(.2f, 0, 0);
-                gas.PlaceGas(EndPosition);
-                bounds = new BoundingCircle(Position, 64);
-                gasFired = true;
-            }
-
-            if (Position.X > nextPoint.X - 3 && Position.X < nextPoint.X + 3
-            && Position.Y > nextPoint.Y - 3 && Position.Y < nextPoint.Y + 3
-            && gasFired == false && count < path.Count-1)
-            {
-                count++;
-                nextPoint = path[count];
-                nextPoint.Round();
-            }
-
 
             if (gasFired)
             {

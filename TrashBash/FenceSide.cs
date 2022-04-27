@@ -31,10 +31,11 @@ namespace TrashBash
             }
         }
 
-        public FenceSide(Vector2 position)
+        public FenceSide(Vector2 position, ContentManager content)
         {
             this.Position = position;
             this.bounds = new BoundingRectangle(position.X, position.Y, 12, 256);
+            LoadContent(content);
         }
 
         public void LoadContent(ContentManager content)

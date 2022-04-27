@@ -122,7 +122,7 @@ namespace TrashBash
             Stack<(int, int)> Path = new Stack<(int, int)>();
             Stack<(int, int)> temp = new Stack<(int, int)>();
 
-            while (!(cellDetails[row, col].parentI == row && cellDetails[row, col].parentJ == col))
+            while (row >= 0 && col >= 0 && !(cellDetails[row, col].parentI == row && cellDetails[row, col].parentJ == col))
             {
                 Path.Push((row, col));
                 temp.Push((row, col));

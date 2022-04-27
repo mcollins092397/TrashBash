@@ -40,7 +40,7 @@ namespace TrashBash
 
         private BoundingRectangle bounds = new BoundingRectangle(new Vector2(200 + 20, 200), 25, 64);
 
-
+        private BoundingRectangle centerBounds = new BoundingRectangle(new Vector2(200 + 20, 200), 10, 1);
 
         public List<PlayerProjectile> PlayerProjectile = new List<PlayerProjectile>();
         public List<PlayerProjectile> ProjectileRemove = new List<PlayerProjectile>();
@@ -76,6 +76,17 @@ namespace TrashBash
             get
             {
                 return bounds;
+            }
+        }
+
+        /// <summary>
+        /// bounding volume of the sprite
+        /// </summary>
+        public BoundingRectangle CenterBounds
+        {
+            get
+            {
+                return centerBounds;
             }
         }
 
@@ -312,6 +323,8 @@ namespace TrashBash
             bounds.X = Position.X + 20;
             bounds.Y = Position.Y;
 
+            centerBounds.X = Position.X + 27;
+            centerBounds.Y = Position.Y + 40;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

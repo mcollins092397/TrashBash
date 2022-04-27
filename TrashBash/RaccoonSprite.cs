@@ -225,12 +225,6 @@ namespace TrashBash
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            //draw each projectile
-            foreach (GasProjectile proj in GasProjectileActive)
-            {
-                proj.Draw(gameTime, spriteBatch);
-            }
-
             //get raccoons animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -263,6 +257,12 @@ namespace TrashBash
             //draw spider based on what frame it is in
             var source = new Rectangle(animationFrame * 64, (int)Direction * 64, 64, 64);
             spriteBatch.Draw(texture, Position, source, Color);
+
+            //draw each projectile
+            foreach (GasProjectile proj in GasProjectileActive)
+            {
+                proj.Draw(gameTime, spriteBatch);
+            }
         }
 
     }

@@ -32,10 +32,11 @@ namespace TrashBash
             }
         }
 
-        public FenceTop(Vector2 position)
+        public FenceTop(Vector2 position, ContentManager content)
         {
             this.Position = position;
             this.bounds = new BoundingRectangle(position.X, position.Y, 256, 39);
+            LoadContent(content);
             
         }
 

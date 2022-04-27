@@ -162,11 +162,16 @@ namespace TrashBash
                     {
                         Position += new Vector2(0, -moveSpeed);
                     }
-                    if (temp.X > (float)path.Peek().Item2 * 10 - 20 && temp.X < (float)path.Peek().Item2 * 10 + 20
+                    while (temp.X > (float)path.Peek().Item2 * 10 - 20 && temp.X < (float)path.Peek().Item2 * 10 + 20
                     && temp.Y > (float)path.Peek().Item1 * 10 - 20 && temp.Y < (float)path.Peek().Item1 * 10 + 20
                     && path.Count > 0)
                     {
                         path.Pop();
+
+                        if(path.Count == 0)
+                        {
+                            break;
+                        }
                     }
                     //update the bounds
                     bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
@@ -215,7 +220,7 @@ namespace TrashBash
             //get spiderss animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
-            //test
+            //this draws the path that the spiders are going to take uncomment if needed
             if(path != null)
             {
                 foreach ((int, int) p in path)

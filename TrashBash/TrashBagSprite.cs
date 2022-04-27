@@ -35,6 +35,9 @@ namespace TrashBash
         //the bags default health
         public double Health = 3;
 
+        //the level that the bag appears in
+        public float Level;
+
 
 
         //used to keep track of the bags invulnerability frames after being hit. May remove later so that higher fire rate feels good
@@ -45,10 +48,11 @@ namespace TrashBash
         /// </summary>
         /// <param name="position">The position the bag will be constucted</param>
         /// <param name="content">the content manager</param>
-        public TrashBagSprite(Vector2 position, ContentManager content)
+        public TrashBagSprite(Vector2 position, ContentManager content, float level)
         {
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(32, 32), 16);
+            this.Level = level;
             LoadContent(content);
         }
 
