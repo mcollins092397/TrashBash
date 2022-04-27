@@ -221,36 +221,151 @@ namespace TrashBash
 
                 if(!loaded)
                 {
-                    trashBags.Add(new TrashBagSprite(new Vector2(1200, 600), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1210, 605), Content, ((float)State.Level0)));
+
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 360), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 390), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(45, 375), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 420), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 450), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(120, 245), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(150, 220), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(143, 240), Content, ((float)State.Level0)));
+
+                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 665), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 635), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1155, 665), Content, ((float)State.Level0)));
+
+                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 105), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 75), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, ((float)State.Level0)));
                 }
 
+                //walls
+                #region
                 walls.Add(new Wall(new Vector2(1320, 500), Content, 10));
                 walls.Add(new Wall(new Vector2(1320, 530), Content, 3));
-                walls.Add(new Wall(new Vector2(1320, 560), Content, 12));
-                walls.Add(new Wall(new Vector2(1320, 590), Content, 12));
-                walls.Add(new Wall(new Vector2(1320, 620), Content, 12));
-                walls.Add(new Wall(new Vector2(1320, 650), Content, 12));
-                walls.Add(new Wall(new Vector2(1320, 680), Content, 12));
-                walls.Add(new Wall(new Vector2(1320, 710), Content, 12));
+                walls.Add(new Wall(new Vector2(1320, 560), Content, 14));
+                walls.Add(new Wall(new Vector2(1320, 590), Content, 14));
+                walls.Add(new Wall(new Vector2(1320, 620), Content, 14));
+                walls.Add(new Wall(new Vector2(1320, 650), Content, 14));
+                walls.Add(new Wall(new Vector2(1320, 680), Content, 14));
+                walls.Add(new Wall(new Vector2(1320, 710), Content, 4));
 
                 
                 walls.Add(new Wall(new Vector2(1290, 560), Content, 0));
-                walls.Add(new Wall(new Vector2(1290, 590), Content, 12));
-                walls.Add(new Wall(new Vector2(1290, 620), Content, 12));
-                walls.Add(new Wall(new Vector2(1290, 650), Content, 12));
-                walls.Add(new Wall(new Vector2(1290, 680), Content, 12));
-                walls.Add(new Wall(new Vector2(1290, 710), Content, 12));
+                walls.Add(new Wall(new Vector2(1290, 590), Content, 15));
+                walls.Add(new Wall(new Vector2(1290, 620), Content, 13));
+                walls.Add(new Wall(new Vector2(1290, 650), Content, 13));
+                walls.Add(new Wall(new Vector2(1290, 680), Content, 13));
+                walls.Add(new Wall(new Vector2(1290, 710), Content, 17));
 
                 
                 walls.Add(new Wall(new Vector2(1260, 620), Content, 0));
-                walls.Add(new Wall(new Vector2(1260, 650), Content, 12));
-                walls.Add(new Wall(new Vector2(1260, 680), Content, 12));
-                walls.Add(new Wall(new Vector2(1260, 710), Content, 12));
+                walls.Add(new Wall(new Vector2(1260, 650), Content, 13));
+                walls.Add(new Wall(new Vector2(1260, 680), Content, 13));
+                walls.Add(new Wall(new Vector2(1260, 710), Content, 17));
 
                 
                 walls.Add(new Wall(new Vector2(1230, 650), Content, 0));
-                walls.Add(new Wall(new Vector2(1230, 680), Content, 12));
-                walls.Add(new Wall(new Vector2(1230, 710), Content, 12));
+                walls.Add(new Wall(new Vector2(1230, 680), Content, 15));
+                walls.Add(new Wall(new Vector2(1230, 710), Content, 17));
+
+
+
+
+                walls.Add(new Wall(new Vector2(15, 140), Content, 0));
+                walls.Add(new Wall(new Vector2(15, 170), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 200), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 230), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 260), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 290), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 320), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 350), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 380), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 410), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 440), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 470), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 500), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 530), Content, 3));
+                walls.Add(new Wall(new Vector2(15, 560), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 590), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 620), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 650), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 680), Content, 15));
+                walls.Add(new Wall(new Vector2(15, 710), Content, 6));
+
+                walls.Add(new Wall(new Vector2(45, 560), Content, 2));
+                walls.Add(new Wall(new Vector2(45, 590), Content, 14));
+                walls.Add(new Wall(new Vector2(45, 620), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 650), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 680), Content, 4));
+
+                walls.Add(new Wall(new Vector2(75, 620), Content, 2));
+                walls.Add(new Wall(new Vector2(75, 650), Content, 4));
+
+                walls.Add(new Wall(new Vector2(45, 110), Content, 0));
+                walls.Add(new Wall(new Vector2(45, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 200), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 230), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 260), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 290), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 320), Content, 13));
+                walls.Add(new Wall(new Vector2(45, 350), Content, 4));
+
+                walls.Add(new Wall(new Vector2(75, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(75, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 200), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 230), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 260), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 290), Content, 13));
+                walls.Add(new Wall(new Vector2(75, 320), Content, 4));
+
+                walls.Add(new Wall(new Vector2(105, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(105, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(105, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(105, 200), Content, 13));
+                walls.Add(new Wall(new Vector2(105, 230), Content, 13));
+                walls.Add(new Wall(new Vector2(105, 260), Content, 14));
+                walls.Add(new Wall(new Vector2(105, 290), Content, 4));
+
+                walls.Add(new Wall(new Vector2(135, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(135, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(135, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(135, 200), Content, 13));
+                walls.Add(new Wall(new Vector2(135, 230), Content, 4));
+
+                walls.Add(new Wall(new Vector2(165, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(165, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(165, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(165, 200), Content, 17));
+
+                walls.Add(new Wall(new Vector2(195, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(195, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(195, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(195, 200), Content, 17));
+
+                walls.Add(new Wall(new Vector2(215, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(215, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(215, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(215, 200), Content, 17));
+
+                walls.Add(new Wall(new Vector2(215, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(215, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(215, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(215, 200), Content, 17));
+
+                walls.Add(new Wall(new Vector2(245, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(245, 140), Content, 13));
+                walls.Add(new Wall(new Vector2(245, 170), Content, 13));
+                walls.Add(new Wall(new Vector2(245, 200), Content, 4));
+
+                walls.Add(new Wall(new Vector2(275, 110), Content, 16));
+                walls.Add(new Wall(new Vector2(275, 140), Content, 14));
+                walls.Add(new Wall(new Vector2(275, 170), Content, 4));
+                #endregion
 
                 gameState = State.Level0;
             }
@@ -633,6 +748,7 @@ namespace TrashBash
             exitBtn.LoadContent(Content);
             title = Content.Load<Texture2D>("Logo");
             spriteFont = Content.Load<SpriteFont>("arial");
+
 
             //hud content
             healthCan = Content.Load<Texture2D>("HealthCans(hud)/Can");
@@ -1068,6 +1184,12 @@ namespace TrashBash
                 foreach (TrashSpiderSprite spider in deadSpiders)
                 {
                     spider.Draw(gameTime, _spriteBatch);
+                } 
+
+                //dead trash bags
+                foreach (TrashBagSprite bag in deadTrashBags)
+                {
+                    bag.Draw(gameTime, _spriteBatch);
                 }
 
                 //trash bags that need to be drawn below the player
@@ -1082,11 +1204,7 @@ namespace TrashBash
                     }
                 }
 
-                //dead trash bags
-                foreach (TrashBagSprite bag in deadTrashBags)
-                {
-                    bag.Draw(gameTime, _spriteBatch);
-                }
+               
 
                 //living trash spiders
                 foreach (TrashSpiderSprite spider in livingSpiders)
@@ -1117,7 +1235,7 @@ namespace TrashBash
                 //draw walls above the player
                 foreach (Wall wall in walls)
                 {
-                    if (wall.Bounds.Y + 16 > player.CenterBounds.Y)
+                    if (wall.Bounds.Y + 16 >= player.CenterBounds.Y)
                     {
                         wall.Draw(gameTime, _spriteBatch);
                     }
@@ -1128,7 +1246,7 @@ namespace TrashBash
                 {
                     if (bag.Level == (float)gameState)
                     {
-                        if (bag.Bounds.Center.Y > player.CenterBounds.Y)
+                        if (bag.Bounds.Center.Y >= player.CenterBounds.Y)
                         {
                             bag.Draw(gameTime, _spriteBatch);
                         }

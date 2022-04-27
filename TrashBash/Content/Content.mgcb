@@ -278,9 +278,6 @@
 /processorParam:TextureFormat=Color
 /build:test.png
 
-#begin test.tmx
-/copy:test.tmx
-
 #begin tileset.png
 /importer:TextureImporter
 /processor:TextureProcessor
