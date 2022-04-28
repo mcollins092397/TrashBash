@@ -114,12 +114,12 @@ namespace TrashBash
             pathfinderRefreshWait += gameTime.ElapsedGameTime.TotalSeconds;
             if (!initialPathLoad)
             {
-                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.Bounds.X + 16) / 10, (int)(player.Bounds.Y + 32) / 10);
+                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y + 10) / 10);
                 initialPathLoad = true;
             }
             if (pathfinderRefreshWait > .5)
             {
-                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.Bounds.X + 16) / 10, (int)(player.Bounds.Y + 32) / 10);
+                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y + 10) / 10);
                 pathfinderRefreshWait -= .5;
             }
 

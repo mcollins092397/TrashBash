@@ -319,6 +319,12 @@ namespace TrashBash
                 Color = Color.White;
             }
 
+            //put health back at cap if it has passed it
+            if(PlayerCurrentHealth > PlayerMaxHealth)
+            {
+                PlayerCurrentHealth = PlayerMaxHealth;
+            }
+
             //update the bounds
             bounds.X = Position.X + 20;
             bounds.Y = Position.Y;

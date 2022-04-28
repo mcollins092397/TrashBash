@@ -80,6 +80,10 @@ namespace TrashBash
         private List<FenceBottom> fenceBottoms = new List<FenceBottom>();
         private List<FenceSide> fenceSides = new List<FenceSide>();
 
+        //list of health pickups
+        public List<HealthPickup> healthPickups = new List<HealthPickup>();
+        public List<HealthPickup> hpPickedUp = new List<HealthPickup>();
+
         //list of gates
         private List<GateTop> gateTops = new List<GateTop>();
 
@@ -240,6 +244,8 @@ namespace TrashBash
                     trashBags.Add(new TrashBagSprite(new Vector2(1310, 75), Content, ((float)State.Level0)));
                     trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, ((float)State.Level0)));
                 }
+
+                healthPickups.Add(new HealthPickup(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content, 0));
 
                 //walls
                 #region
@@ -929,6 +935,33 @@ namespace TrashBash
             }
             #endregion
 
+            //health pickup update logic
+            foreach (HealthPickup hp in healthPickups)
+            {
+                if (hp.Level == (float)gameState)
+                {
+                    if (player.Bounds.CollidesWith(hp.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                    {
+                        if(player.PlayerCurrentHealth + 1 < player.PlayerMaxHealth)
+                        {
+                            player.PlayerCurrentHealth++;
+                        }
+                        else if(player.PlayerCurrentHealth + 1 >= player.PlayerMaxHealth)
+                        {
+                            player.PlayerCurrentHealth = player.PlayerMaxHealth;
+                        }
+                        hpPickedUp.Add(hp);
+                    }
+                }
+            }
+
+            foreach (HealthPickup hp in hpPickedUp)
+            {
+                healthPickups.Remove(hp);
+            }
+
+            hpPickedUp.Clear();
+
             //wall collisions
             #region
             foreach (Wall wall in walls)
@@ -1229,6 +1262,13 @@ namespace TrashBash
                     }
                 }
 
+                foreach(HealthPickup hp in healthPickups)
+                {
+                    if(hp.Level == (float)gameState)
+                    {
+                        hp.Draw(gameTime, _spriteBatch);
+                    }
+                }
                 //the player
                 player.Draw(gameTime, _spriteBatch);
 
