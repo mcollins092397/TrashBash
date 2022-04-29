@@ -35,6 +35,7 @@ namespace TrashBash
         //the bags default health
         public double Health = 3;
 
+
         //the level that the bag appears in
         public float Level;
 

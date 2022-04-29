@@ -14,10 +14,13 @@ namespace TrashBash
     {
         //the raccoons texture
         private Texture2D texture;
+        private double animationTimer;
+        public short AnimationFrame = 0;
 
 
         //the raccoons position
         public Vector2 Position;
+        private Vector2 startPosition;
 
         //the raccoons bounds
         private BoundingRectangle bounds;
@@ -31,6 +34,13 @@ namespace TrashBash
         //the level that the bag appears in
         public float Level;
 
+        private bool displayText = false;
+
+        //spritefont used in the main menu controls explanation and the game over screen
+        private SpriteFont spriteFont;
+
+        private bool goingDown = false;
+
         /// <summary>
         /// constructor for raccoon object
         /// </summary>
@@ -39,7 +49,8 @@ namespace TrashBash
         public HealthPickup(Vector2 position, ContentManager content, float level)
         {
             this.Position = position;
-            this.bounds = new BoundingRectangle(position, 32, 32);
+            this.startPosition = position;
+            this.bounds = new BoundingRectangle(position, 48, 48);
             this.Level = level;
             LoadContent(content);
         }
@@ -51,6 +62,7 @@ namespace TrashBash
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("HealthPickup");
+            spriteFont = content.Load<SpriteFont>("arial");
             //hitSound = content.Load<SoundEffect>("raccoonHit");
         }
 
@@ -59,11 +71,34 @@ namespace TrashBash
         /// </summary>
         /// <param name="gameTime">gametime object </param>
         /// <param name="player">player object</param>
-        /// <param name="gas">the gas particle system that manages the gas explosion</param>
-        /// <param name="content">content manager</param>
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, PlayerController player)
         {
+            if(player.Bounds.CollidesWith(bounds) && Level == 0)
+            {
+                displayText = true;
+            }
+            else
+            {
+                displayText = false;
+            }
 
+            if(Position.Y < startPosition.Y - 5)
+            {
+                goingDown = true;
+            }
+
+            if(goingDown)
+            {
+                Position.Y += 0.1f;
+                if(Position.Y == startPosition.Y)
+                {
+                    goingDown = false;
+                }
+            }
+            else
+            {
+                Position.Y -= 0.1f;
+            }
         }
 
         /// <summary>
@@ -73,8 +108,28 @@ namespace TrashBash
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            
-            spriteBatch.Draw(texture, Position, null, Color.White);
+            //get spiderss animation frame
+            animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (animationTimer > .3)
+            {
+                AnimationFrame++;
+
+                if (AnimationFrame > 1)
+                {
+                    AnimationFrame = 0;
+                }
+
+                animationTimer -= 0.3;
+            }
+
+            if(displayText && Level == 0)
+            {
+                spriteBatch.DrawString(spriteFont, "Space to Pickup", Position - new Vector2(65,20), Color.White);
+            }
+
+            var source = new Rectangle(AnimationFrame * 48, 0, 48, 48);
+            spriteBatch.Draw(texture, Position, source, Color.White);
         }
     }
 }

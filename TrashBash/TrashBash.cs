@@ -17,7 +17,6 @@ namespace TrashBash
         Level2 = 2,
         Level3 = 3,
         Level4 = 4,
-        Level5 = 5,
         GameOver = 98,
         MainMenu = 99
 
@@ -108,12 +107,11 @@ namespace TrashBash
         public int[,] Grid = new int[77,137];
         AStarPathfinder pathfinder;
 
-        private Tilemap _tilemap;
 
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -143,16 +141,16 @@ namespace TrashBash
             levelList.Add(new LevelInfo(2, false, false, false, false));
             levelList.Add(new LevelInfo(3, false, false, false, false));
             levelList.Add(new LevelInfo(4, false, false, false, false));
-            levelList.Add(new LevelInfo(5, false, false, false, false));
+
             //then begin adding random levels until the level count has been filled,
             //need to still add a level count variable to adjust based on what stage the player is in
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
-            levelList.Add(new LevelInfo(RandomHelper.Next(1, 5), false, false, false, false));
+            levelList.Add(new LevelInfo(1, false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
+            levelList.Add(new LevelInfo(RandomHelper.Next(1, 4), false, false, false, false));
 
             //select a random level in the list of levels and set it as the stages item room/shop
             //levelList[RandomHelper.Next(1, levelList.Count)].ItemRoom = true;
@@ -161,7 +159,6 @@ namespace TrashBash
             //initialize pathfinder
             pathfinder = new AStarPathfinder(Grid);
 
-            _tilemap = new Tilemap("map.txt");
 
             base.Initialize();
         }
@@ -225,27 +222,27 @@ namespace TrashBash
 
                 if(!loaded)
                 {
-                    trashBags.Add(new TrashBagSprite(new Vector2(1210, 605), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1210, 605), Content, levelIndex));
 
-                    trashBags.Add(new TrashBagSprite(new Vector2(25, 360), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(25, 390), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(45, 375), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(25, 420), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(25, 450), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(120, 245), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(150, 220), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(143, 240), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 360), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 390), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(45, 375), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 420), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 450), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(120, 245), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(150, 220), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(143, 240), Content, levelIndex));
 
-                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 665), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 635), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1155, 665), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 665), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1185, 635), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1155, 665), Content, levelIndex));
 
-                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 105), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 75), Content, ((float)State.Level0)));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, ((float)State.Level0)));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 105), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1310, 75), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, levelIndex));
                 }
 
-                healthPickups.Add(new HealthPickup(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content, 0));
+                healthPickups.Add(new HealthPickup(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content, levelIndex));
 
                 //walls
                 #region
@@ -424,15 +421,15 @@ namespace TrashBash
 
                 if(!loaded)
                 {
-                    trashBags.Add(new TrashBagSprite(new Vector2(1200, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1100, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(1000, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(900, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(800, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(700, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(600, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(500, 600), Content, (float)State.Level1));
-                    trashBags.Add(new TrashBagSprite(new Vector2(400, 600), Content, (float)State.Level1));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1200, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1100, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1000, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(900, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(800, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(700, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(600, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(500, 600), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(400, 600), Content, levelIndex));
                 }
 
 
@@ -599,56 +596,6 @@ namespace TrashBash
             }
             #endregion
 
-            //level 5 uses a tilemap
-            if (level == State.Level5)
-            #region
-            {
-                fenceTops.Add(new FenceTop(new Vector2(4, 0), Content));
-                fenceTops.Add(new FenceTop(new Vector2(260, 0), Content));
-
-                if (!clear)
-                {
-                    gateTops.Add(new GateTop(new Vector2(516, 0), Content));
-                    gateSoundPlayed = false;
-                }
-
-                fenceTops.Add(new FenceTop(new Vector2(850, 0), Content));
-                fenceTops.Add(new FenceTop(new Vector2(1106, 0), Content));
-
-                fenceBottoms.Add(new FenceBottom(new Vector2(4, 676), Content));
-                fenceBottoms.Add(new FenceBottom(new Vector2(260, 676), Content));
-
-                fenceBottoms.Add(new FenceBottom(new Vector2(850, 676), Content));
-                fenceBottoms.Add(new FenceBottom(new Vector2(1106, 676), Content));
-
-
-                fenceSides.Add(new FenceSide(new Vector2(0, 4), Content));
-                if (!item)
-                {
-                    fenceSides.Add(new FenceSide(new Vector2(0, 260), Content));
-                }
-                fenceSides.Add(new FenceSide(new Vector2(0, 516), Content));
-
-                fenceSides.Add(new FenceSide(new Vector2(1354, 4), Content));
-                if (!shop)
-                {
-                    fenceSides.Add(new FenceSide(new Vector2(1354, 260), Content));
-                }
-                fenceSides.Add(new FenceSide(new Vector2(1354, 515), Content));
-
-                if (!clear)
-                {
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                }
-
-                gameState = State.Level5;
-            }
-            #endregion
-
             //the game over screen presents the user the prompt to leave or reset the game
             if (level == State.GameOver)
             #region
@@ -716,13 +663,17 @@ namespace TrashBash
 
             foreach (TrashBagSprite bag in trashBags)
             {
-                for (int y = (int)(bag.Position.Y + 21) / 10; y < (int)(((bag.Position.Y + 21) + (bag.Bounds.Radius * 2)) / 10); y++)
+                if(bag.Level == (float)gameState)
                 {
-                    for (int x = (int)(bag.Position.X + 23) / 10; x < (int)(((bag.Position.X + 23) + (bag.Bounds.Radius * 2)) / 10); x++)
+                    for (int y = (int)(bag.Position.Y + 21) / 10; y < (int)(((bag.Position.Y + 21) + (bag.Bounds.Radius * 2)) / 10); y++)
                     {
-                        Grid[y, x] += 10;
+                        for (int x = (int)(bag.Position.X + 23) / 10; x < (int)(((bag.Position.X + 23) + (bag.Bounds.Radius * 2)) / 10); x++)
+                        {
+                            Grid[y, x] += 10;
+                        }
                     }
                 }
+                
             }
 
             if(clear)
@@ -769,8 +720,6 @@ namespace TrashBash
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = .1f;
 
-
-            _tilemap.LoadContent(Content);
         }
 
         /// <summary>
@@ -782,9 +731,6 @@ namespace TrashBash
             //Default game exit, may remove when pause menu is added in
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // update the cube 
-            //cube.Update(gameTime);
 
             //player update, check if player health is 0 to end game
             #region
@@ -875,7 +821,12 @@ namespace TrashBash
                     {
                         spider.Dead = true;
                         spider.AnimationFrame = 0;
+                        if(RandomHelper.Next(0, 25) == 0)
+                        {
+                            healthPickups.Add(new HealthPickup(spider.Position, Content, levelIndex));
+                        }
                         deadSpiders.Add(spider);
+                        
                     }
 
                     if (player.Hit == false)
@@ -919,6 +870,10 @@ namespace TrashBash
                                 Grid[y, x] -= 10;
                             }
                         }
+                        if (RandomHelper.Next(0, 25) == 0)
+                        {
+                            healthPickups.Add(new HealthPickup(bag.Position, Content, levelIndex));
+                        }
                     }
 
                     if (player.CenterBounds.CollidesWith(bag.Bounds) && bag.Health > 0)
@@ -936,10 +891,13 @@ namespace TrashBash
             #endregion
 
             //health pickup update logic
+            #region
             foreach (HealthPickup hp in healthPickups)
             {
                 if (hp.Level == (float)gameState)
                 {
+                    hp.Update(gameTime, player);
+
                     if (player.Bounds.CollidesWith(hp.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                     {
                         if(player.PlayerCurrentHealth + 1 < player.PlayerMaxHealth)
@@ -961,6 +919,7 @@ namespace TrashBash
             }
 
             hpPickedUp.Clear();
+            #endregion
 
             //wall collisions
             #region
@@ -989,6 +948,10 @@ namespace TrashBash
                 if (raccoon.Health <= 0)
                 {
                     deadRaccoons.Add(raccoon);
+                    if (RandomHelper.Next(0, 25) == 0)
+                    {
+                        healthPickups.Add(new HealthPickup(raccoon.Position, Content, levelIndex));
+                    }
                 }
 
                 if (player.Hit == false)
@@ -1184,15 +1147,10 @@ namespace TrashBash
             //otherwise go through the lists of gameplay objects and draw them to the screen
             if(gameState != State.MainMenu && gameState != State.GameOver)
             {
-                if(gameState != State.Level5)
-                {
-                    //default background
-                    _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
-                }
-                else
-                {
-                    _tilemap.Draw(gameTime, _spriteBatch);
-                }
+
+                //default background
+                _spriteBatch.Draw(background, new Vector2(0, 0), Color.White);
+
 
                 //top of screen fences
                 foreach (FenceTop fence in fenceTops)
@@ -1262,13 +1220,6 @@ namespace TrashBash
                     }
                 }
 
-                foreach(HealthPickup hp in healthPickups)
-                {
-                    if(hp.Level == (float)gameState)
-                    {
-                        hp.Draw(gameTime, _spriteBatch);
-                    }
-                }
                 //the player
                 player.Draw(gameTime, _spriteBatch);
 
@@ -1326,6 +1277,14 @@ namespace TrashBash
                     }
                 }
 
+                foreach (HealthPickup hp in healthPickups)
+                {
+                    if (hp.Level == (float)gameState)
+                    {
+                        hp.Draw(gameTime, _spriteBatch);
+                    }
+                }
+
                 //bottom of screen fences
                 foreach (FenceBottom fence in fenceBottoms)
                 {
@@ -1340,6 +1299,7 @@ namespace TrashBash
                 _spriteBatch.DrawString(spriteFont, "          GAME OVER\n   Esc/Back button to exit\nPress Space or A to restart", new Vector2((GraphicsDevice.Viewport.Width / 2) - 140, (GraphicsDevice.Viewport.Height / 2) - 30), Color.White);
             }
 
+            _spriteBatch.DrawString(spriteFont, levelIndex.ToString(), new Vector2((GraphicsDevice.Viewport.Width / 2) - 140, (GraphicsDevice.Viewport.Height / 2) - 30), Color.White);
             //end of spritebatch draws
             _spriteBatch.End();
             
