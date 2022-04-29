@@ -663,7 +663,7 @@ namespace TrashBash
 
             foreach (TrashBagSprite bag in trashBags)
             {
-                if(bag.Level == (float)gameState)
+                if(bag.Level == levelIndex)
                 {
                     for (int y = (int)(bag.Position.Y + 21) / 10; y < (int)(((bag.Position.Y + 21) + (bag.Bounds.Radius * 2)) / 10); y++)
                     {
@@ -1186,7 +1186,7 @@ namespace TrashBash
                 //trash bags that need to be drawn below the player
                 foreach (TrashBagSprite bag in trashBags)
                 {
-                    if (bag.Level == (float)gameState)
+                    if (bag.Level == levelIndex)
                     {
                         if (bag.Bounds.Center.Y < player.CenterBounds.Y)
                         {
@@ -1235,7 +1235,7 @@ namespace TrashBash
                 //trash bags that need drawn above the player
                 foreach (TrashBagSprite bag in trashBags)
                 {
-                    if (bag.Level == (float)gameState)
+                    if (bag.Level == levelIndex)
                     {
                         if (bag.Bounds.Center.Y >= player.CenterBounds.Y)
                         {
@@ -1279,7 +1279,7 @@ namespace TrashBash
 
                 foreach (HealthPickup hp in healthPickups)
                 {
-                    if (hp.Level == (float)gameState)
+                    if (hp.Level == levelIndex)
                     {
                         hp.Draw(gameTime, _spriteBatch);
                     }
