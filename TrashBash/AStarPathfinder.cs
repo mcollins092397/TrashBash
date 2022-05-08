@@ -108,11 +108,14 @@ namespace TrashBash
         /// <returns>the h value of cell [row,col]</returns>
         private double calculateHValue(int row, int col, int destinationRow, int destinationCol)
         {
-            //System.Diagnostics.Debug.WriteLine("\nThe path is: ");
+            /*//System.Diagnostics.Debug.WriteLine("\nThe path is: ");
             double dx = Math.Abs(col - destinationCol);
             double dy = Math.Abs(row - destinationRow);
 
             return (1 * (dx + dy) + (Math.Sqrt(2) - 2 * 1) * Math.Min(dx, dy));
+            */
+
+            return Math.Abs(row - destinationRow) + Math.Abs(col - destinationCol);
         }
 
         private Stack<(int, int)> tracePath(cell[,] cellDetails, int destinationRow, int destinationCol)
@@ -355,6 +358,7 @@ namespace TrashBash
                         }
                     }
                 }
+                /*
                 //North-east Successor
                 if (isValid(i - 1, j + 1) == true)
                 {
@@ -494,6 +498,7 @@ namespace TrashBash
                         }
                     }
                 }
+                */
             }
 
             if(foundDest == false)

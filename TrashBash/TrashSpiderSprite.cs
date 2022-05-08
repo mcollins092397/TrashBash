@@ -53,15 +53,18 @@ namespace TrashBash
         private bool deathAnimationPlayed = false;
 
         //spider move speed
-        private float moveSpeed = 1.8f;
+        private float moveSpeed = 2f;
 
         //used to keep track of the spiders invulnerability frames after being hit. May remove later so that higher fire rate feels good
         private double iFrameTimer = 0;
         public bool Hit = false;
 
         //used to keep track if the spider has been awoken (that way they can maybe surprise the player
+        private bool startWake = false;
         private bool awake = false;
         private bool awakeAnimationPlayed = false;
+        private double wakeTimer = 0;
+        private double waitTime;
 
         AStarPathfinder pathfinder;
         Stack<(int, int)> path;
@@ -83,6 +86,7 @@ namespace TrashBash
             this.pathfinder = pathfinder;
             path = new Stack<(int, int)>();
             LoadContent(content);
+            waitTime = RandomHelper.NextFloat(.5f, 8);
         }
 
 
@@ -114,12 +118,29 @@ namespace TrashBash
             pathfinderRefreshWait += gameTime.ElapsedGameTime.TotalSeconds;
             if (!initialPathLoad)
             {
-                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y + 10) / 10);
+                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y) / 10);
                 initialPathLoad = true;
             }
             if (pathfinderRefreshWait > .5)
             {
-                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y + 10) / 10);
+                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y) / 10);
+                if(path == null)
+                {
+                    path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y - 20) / 10);
+
+                    if (path == null)
+                    {
+                        path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y + 20) / 10);
+                        if (path == null)
+                        {
+                            path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X + 20) / 10, (int)(player.CenterBounds.Y) / 10);
+                            if (path == null)
+                            {
+                                path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X - 20) / 10, (int)(player.CenterBounds.Y) / 10);
+                            }
+                        }
+                    }
+                }
                 pathfinderRefreshWait -= .5;
             }
 
@@ -132,38 +153,50 @@ namespace TrashBash
             //check the distance to the player and if the player is close enough wake up this spider
             if(Math.Abs(player.Position.X - Position.X) < 250 && Math.Abs(player.Position.Y - Position.Y) < 250)
             {
-                awake = true;
+                startWake = true;
             }
 
+            if(startWake && !awake)
+            {
+                wakeTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+                if(wakeTimer >= waitTime)
+                {
+                    awake = true;
+                }
+                
+            }
 
             //if awake start making their way towards the player's position
             if(path != null)
             {
                 if (awakeAnimationPlayed && path.Count > 0)
                 {
-                    Vector2 temp = bounds.Center;
-                    temp.Round();
 
-                    if (Bounds.Center.X < path.Peek().Item2*10 + 10)
+                    if (Bounds.Center.X < path.Peek().Item2*10 + 5* moveSpeed)
                     {
                         Position += new Vector2(moveSpeed, 0);
                         Direction = SpiderDirection.Right;
                     }
-                    if (Bounds.Center.X > path.Peek().Item2*10 - 10)
+                    if (Bounds.Center.X > path.Peek().Item2*10 - moveSpeed)
                     {
                         Position += new Vector2(-moveSpeed, 0);
                         Direction = SpiderDirection.Left;
                     }
-                    if (Bounds.Center.Y < path.Peek().Item1*10 + 10)
+                    if (Bounds.Center.Y < path.Peek().Item1*10 + 5* moveSpeed)
                     {
                         Position += new Vector2(0, moveSpeed);
                     }
-                    if (Bounds.Center.Y > path.Peek().Item1*10 - 10)
+                    if (Bounds.Center.Y > path.Peek().Item1*10 - moveSpeed)
                     {
                         Position += new Vector2(0, -moveSpeed);
                     }
-                    while (temp.X > (float)path.Peek().Item2 * 10 - 20 && temp.X < (float)path.Peek().Item2 * 10 + 20
-                    && temp.Y > (float)path.Peek().Item1 * 10 - 20 && temp.Y < (float)path.Peek().Item1 * 10 + 20
+
+                    //update the bounds
+                    bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
+
+                    while (bounds.Center.X > (float)path.Peek().Item2 * 10 - moveSpeed && bounds.Center.X < (float)path.Peek().Item2 * 10 + 5* moveSpeed
+                    && bounds.Center.Y > (float)path.Peek().Item1 * 10 - moveSpeed && bounds.Center.Y < (float)path.Peek().Item1 * 10 + 5* moveSpeed
                     && path.Count > 0)
                     {
                         path.Pop();
@@ -173,8 +206,7 @@ namespace TrashBash
                             break;
                         }
                     }
-                    //update the bounds
-                    bounds.Center = new Vector2(Position.X + 32, Position.Y + 32);
+                    
                 }
             }
             
@@ -225,7 +257,7 @@ namespace TrashBash
             {
                 foreach ((int, int) p in path)
                 {
-                    //spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), Color.White);
+                    spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
                 }
             }
             

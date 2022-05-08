@@ -13,7 +13,7 @@ namespace TrashBash
 {
     public class GasProjectile
     {
-        private float speed = 3.0f;
+        private float speed = 4.0f;
         public Vector2 Position;
         private Texture2D texture;
         private Texture2D warningTexture;
@@ -41,6 +41,7 @@ namespace TrashBash
         private BoundingCircle bounds;
 
         public float activeTimer = 0;
+        private bool boundsMade;
 
         public bool delete;
 
@@ -79,11 +80,10 @@ namespace TrashBash
             {
                 sound.Play(.2f, 0, 0);
                 gas.PlaceGas(EndPosition);
-                bounds = new BoundingCircle(Position, 64);
                 gasFired = true;
             }
 
-            if (Position.X > nextPoint.X - speed && Position.X < nextPoint.X + speed
+            while (Position.X > nextPoint.X - speed && Position.X < nextPoint.X + speed
             && Position.Y > nextPoint.Y - speed && Position.Y < nextPoint.Y + speed
             && gasFired == false && count < path.Count-1)
             {
@@ -114,7 +114,11 @@ namespace TrashBash
                 drawWarning = false;
                 activeTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                if(activeTimer > 2.4)
+                if(activeTimer > 0.4 && !boundsMade)
+                {
+                    bounds = new BoundingCircle(Position, 64);
+                }
+                if(activeTimer > 2.5)
                 {
                     delete = true;
                 }

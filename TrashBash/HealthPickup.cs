@@ -12,39 +12,40 @@ namespace TrashBash
 {
     public class HealthPickup
     {
-        //the raccoons texture
+        //the health pickup texture and animation variables
         private Texture2D texture;
         private double animationTimer;
         public short AnimationFrame = 0;
 
 
-        //the raccoons position
+        //the pickups position and starting position for its float effect
         public Vector2 Position;
         private Vector2 startPosition;
 
-        //the raccoons bounds
+        //the pickups bounds
         private BoundingRectangle bounds;
 
-        //getter for the raccoon bounds
+        //getter for the pickup bounds
         public BoundingRectangle Bounds => bounds;
 
-        //hit sound effect for the raccoon
+        //pickup sound effect for the pickup (coming soon)
         private SoundEffect hitSound;
 
-        //the level that the bag appears in
+        //the level that the pickup appears in
         public float Level;
 
+        //if the explaination text should be displayed. Set to false after the first lvl
         private bool displayText = false;
 
-        //spritefont used in the main menu controls explanation and the game over screen
+        //spritefont used in the explanation
         private SpriteFont spriteFont;
 
         private bool goingDown = false;
 
         /// <summary>
-        /// constructor for raccoon object
+        /// constructor for health pickup object
         /// </summary>
-        /// <param name="position">raccoon spawn position</param>
+        /// <param name="position">pickup spawn position</param>
         /// <param name="content">games content manager</param>
         public HealthPickup(Vector2 position, ContentManager content, float level)
         {
@@ -56,7 +57,7 @@ namespace TrashBash
         }
 
         /// <summary>
-        /// Loads the raccoon textures bounds and sound effects
+        /// Loads the pickup textures bounds and sound effects
         /// </summary>
         /// <param name="content"></param>
         public void LoadContent(ContentManager content)
@@ -67,7 +68,7 @@ namespace TrashBash
         }
 
         /// <summary>
-        /// update loop for the raccoon
+        /// update loop for the pickup
         /// </summary>
         /// <param name="gameTime">gametime object </param>
         /// <param name="player">player object</param>
@@ -102,13 +103,13 @@ namespace TrashBash
         }
 
         /// <summary>
-        /// Draws and animates the raccoon sprite
+        /// Draws and animates the pickup sprite
         /// </summary>
         /// <param name="gameTime"></param>
         /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            //get spiderss animation frame
+            //get animation frame
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
             if (animationTimer > .3)
@@ -125,7 +126,7 @@ namespace TrashBash
 
             if(displayText && Level == 0)
             {
-                spriteBatch.DrawString(spriteFont, "Space to Pickup", Position - new Vector2(65,20), Color.White);
+                spriteBatch.DrawString(spriteFont, "Space to Pickup\nHeals the Player", Position - new Vector2(65,50), Color.White);
             }
 
             var source = new Rectangle(AnimationFrame * 48, 0, 48, 48);
