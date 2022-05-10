@@ -40,6 +40,8 @@ namespace TrashBash
         //the raccoons bounds
         private BoundingCircle bounds;
 
+        public BoundingCircle ThrowingBounds;
+
         //getter for the raccoon bounds
         public BoundingCircle Bounds => bounds;
 
@@ -76,7 +78,9 @@ namespace TrashBash
         {
             this.Position = position;
             this.bounds = new BoundingCircle(position + new Vector2(32, 32), 32);
+            ThrowingBounds = new BoundingCircle(position + new Vector2(32, 32), 32);
             LoadContent(content);
+
         }
 
         /// <summary>

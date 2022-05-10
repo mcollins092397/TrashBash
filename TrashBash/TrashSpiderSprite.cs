@@ -257,7 +257,7 @@ namespace TrashBash
             {
                 foreach ((int, int) p in path)
                 {
-                    spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+                    //spriteBatch.Draw(test, new Vector2(p.Item2 * 10, p.Item1 * 10), null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
                 }
             }
             

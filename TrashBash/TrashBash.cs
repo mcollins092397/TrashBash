@@ -114,7 +114,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -593,8 +593,8 @@ namespace TrashBash
 
                 if(!clear)
                 {
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
-                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(RandomHelper.Next(66, 1300), RandomHelper.Next(80, 588)), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(220, 500), Content, pathfinder));
+                    livingSpiders.Add(new TrashSpiderSprite(new Vector2(1100, 500), Content, pathfinder));
 
                     livingRaccoons.Add(new RaccoonSprite(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content));
                 }
@@ -814,7 +814,7 @@ namespace TrashBash
             }
             #endregion
 
-            //level 5 is rat boss room
+            //this level is rat boss room
             if (level == State.RatBoss)
             #region
             {
@@ -894,11 +894,79 @@ namespace TrashBash
                 walls.Add(new Wall(new Vector2(1325, 635), Content, 3));
                 walls.Add(new Wall(new Vector2(1325, 665), Content, 3));
                 walls.Add(new Wall(new Vector2(1325, 695), Content, 3));
-                walls.Add(new Wall(new Vector2(1325, 725), Content, 3));
+                walls.Add(new Wall(new Vector2(1325, 725), Content, 4));
 
+                //left side wall
+                walls.Add(new Wall(new Vector2(5, 35), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 65), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 95), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 125), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 155), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 185), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 215), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 245), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 275), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 305), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 335), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 365), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 395), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 425), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 455), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 485), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 515), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 545), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 575), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 605), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 635), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 665), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 695), Content, 3));
+                walls.Add(new Wall(new Vector2(5, 725), Content, 6));
 
-
-
+                //Bottom Wall
+                walls.Add(new Wall(new Vector2(35, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(65, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(95, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(125, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(155, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(185, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(215, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(245, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(275, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(305, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(335, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(365, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(395, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(425, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(455, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(485, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(515, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(545, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(575, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(605, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(635, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(665, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(695, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(725, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(755, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(785, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(815, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(845, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(875, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(905, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(935, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(965, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(995, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1025, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1055, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1085, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1115, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1145, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1175, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1205, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1235, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1265, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1295, 725), Content, 1));
+                walls.Add(new Wall(new Vector2(1325, 725), Content, 2));
 
 
                 gameState = State.RatBoss;
@@ -1108,7 +1176,7 @@ namespace TrashBash
             {
                 if (player.Bounds.CollidesWith(gate.Bounds))
                 {
-                    //player.Position = player.LastMove;
+                    player.Position = player.LastMove;
                 }
                 foreach (PlayerProjectile proj in player.PlayerProjectile)
                 {
@@ -1178,6 +1246,7 @@ namespace TrashBash
                         deadSpiders.Add(spider);
                         
                     }
+
 
                     if (player.Hit == false)
                     {
@@ -1304,17 +1373,12 @@ namespace TrashBash
                     }
                 }
 
-                if (player.Hit == false)
+                if(player.CenterBounds.CollidesWith(raccoon.ThrowingBounds))
                 {
-                    if (player.Bounds.CollidesWith(raccoon.Bounds) && raccoon.Direction != RaccoonDirection.Asleep)
-                    {
-                        player.Hit = true;
-                        player.PlayerCurrentHealth--;
-                        hit.Play(.3f, 0, 0);
-                        shakeViewport = true;
-                        shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
-                    }
+                    player.Position = player.LastMove;
                 }
+
+                
                
 
                 foreach(GasProjectile proj in raccoon.GasProjectileActive)
@@ -1429,6 +1493,10 @@ namespace TrashBash
                     {
                         InitializeLevelX((State)levelList[levelIndex].LevelNum, levelList[levelIndex].Cleared, levelList[levelIndex].Shop, levelList[levelIndex].ItemRoom, levelList[levelIndex].Loaded);
                         levelList[levelIndex].Loaded = true;
+                        if((State)levelList[levelIndex].LevelNum == State.RatBoss)
+                        {
+                            player.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, 660);
+                        }
                     }
                     else
                     {

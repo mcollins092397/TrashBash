@@ -52,6 +52,9 @@ namespace TrashBash
         /// </summary>
         public Color Color { get; set; } = Color.White;
 
+        //bool swaps to true whenever the boss is activly preforming an attackh
+        private bool attacking = false;
+
         /// <summary>
         /// constructor for raccoon object
         /// </summary>
@@ -61,7 +64,7 @@ namespace TrashBash
         {
             this.Position = position;
             center = Position + new Vector2(80, 80);
-            this.bounds = new BoundingCircle(position + new Vector2(32, 32), 32);
+            this.bounds = new BoundingCircle(position + new Vector2(80, 80), 75);
             LoadContent(content);
         }
 
@@ -77,14 +80,63 @@ namespace TrashBash
 
         public void Update(GameTime gameTime, PlayerController player)
         {
-            if(player.Position.X > center.X)
+            if(!attacking)
             {
-                Position.X += moveSpeed;
+                if (Position.X + 160 < 1325)
+                {
+                    //check to see if boss needs to walk right
+                    if (player.Position.X + 30 > center.X + moveSpeed || player.Position.X + 30 > center.X - moveSpeed)
+                    {
+                        Position.X += moveSpeed;
+                    }
+                }
+
+                if(Position.X > 35)
+                {
+                    //check to see if the boss needs to walk left
+                    if (player.Position.X + 30 < center.X + moveSpeed || player.Position.X + 30 < center.X - moveSpeed)
+                    {
+                        Position.X -= moveSpeed;
+                    }
+                }
+                    
+                
+                    
             }
 
-            if (player.Position.X < center.X)
+            //check if the boss was hit by a player projectile
+            foreach (PlayerProjectile proj in player.PlayerProjectile)
             {
-                Position.X -= moveSpeed;
+                if (proj.Bounds.CollidesWith(Bounds))
+                {
+                    Hit = true;
+                    Health -= proj.Damage;
+                    //hitSound.Play(.5f, 0, 0);
+                    player.ProjectileRemove.Add(proj);
+                }
+                else if (proj.Bounds.CollidesWith(Bounds))
+                {
+                    player.ProjectileRemove.Add(proj);
+                }
+            }
+
+            //reset color if no longer in i-frames
+            if (Hit == false)
+            {
+                Color = Color.White;
+            }
+
+            //set i-frames and take damage when hit
+            if (Hit)
+            {
+                iFrameTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                Color = Color.Red;
+
+                if (iFrameTimer > .2)
+                {
+                    Hit = false;
+                    iFrameTimer -= .2;
+                }
             }
 
             center = Position + new Vector2(80, 80);
