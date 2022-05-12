@@ -121,7 +121,7 @@ namespace TrashBash
                 path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y) / 10);
                 initialPathLoad = true;
             }
-            if (pathfinderRefreshWait > .5)
+            if (pathfinderRefreshWait > 1)
             {
                 path = pathfinder.aStarSearch((int)Bounds.Center.X / 10, (int)Bounds.Center.Y / 10, (int)(player.CenterBounds.X) / 10, (int)(player.CenterBounds.Y) / 10);
                 if(path == null)

@@ -114,7 +114,7 @@ namespace TrashBash
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -1176,7 +1176,7 @@ namespace TrashBash
             {
                 if (player.Bounds.CollidesWith(gate.Bounds))
                 {
-                    player.Position = player.LastMove;
+                    //player.Position = player.LastMove;
                 }
                 foreach (PlayerProjectile proj in player.PlayerProjectile)
                 {
@@ -1443,6 +1443,11 @@ namespace TrashBash
                     }
                 }
 
+                if(RatBoss.CurrentHealth <= 0)
+                {
+                    RatBoss.Dead = true;
+                }
+
             }
 
             
@@ -1659,11 +1664,6 @@ namespace TrashBash
                 {
                     raccoon.Draw(gameTime, _spriteBatch);
                 }
-
-                if(gameState == State.RatBoss)
-                {
-                    RatBoss.Draw(gameTime, _spriteBatch);
-                }
                 
 
                 //the player
@@ -1676,6 +1676,12 @@ namespace TrashBash
                     {
                         wall.Draw(gameTime, _spriteBatch);
                     }
+                }
+
+                //draw rat boss if in his stage
+                if (gameState == State.RatBoss)
+                {
+                    RatBoss.Draw(gameTime, _spriteBatch);
                 }
 
                 //trash bags that need drawn above the player

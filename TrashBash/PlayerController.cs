@@ -46,12 +46,12 @@ namespace TrashBash
         public List<PlayerProjectile> ProjectileRemove = new List<PlayerProjectile>();
 
         public float ProjSpeed = 3;
-        public float ProjDmg = 1;
+        public float ProjDmg = 5; //was 1
         public float ProjRange = 250;
         public float ProjFireRate = .75f;
         private double lastFire = 0;
 
-        public float MovementSpeed = 2f;
+        public float MovementSpeed = 6f; //was 2
         public int PlayerMaxHealth = 6;
         public int PlayerCurrentHealth;
         public float SprintMultiply = 1.7f;
