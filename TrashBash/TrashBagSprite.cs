@@ -84,6 +84,10 @@ namespace TrashBash
                 {
                     Hit = true;
                     Health -= proj.Damage;
+                    if(Health < 0)
+                    {
+                        Health = 0;
+                    }
                     bagHit.Play(.5f, 0, 0);
                     player.ProjectileRemove.Add(proj);
                 }

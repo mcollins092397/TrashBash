@@ -17,7 +17,8 @@ namespace TrashBash
             idle = 0,
             moveLeft = 1,
             moveRight = 2,
-            charge = 3
+            charge = 3,
+            slam = 4,
         }
 
         //sound triggered on being shot by the player
@@ -36,6 +37,9 @@ namespace TrashBash
         //warning textures
         private Texture2D arrowWarning;
         private Texture2D arrowWarningUp;
+        private Texture2D warningCircle;
+
+        private Texture2D test;
 
         //health bar textures
         private Texture2D healthEmpty;
@@ -87,6 +91,10 @@ namespace TrashBash
         //spritefont used in the main menu controls explanation and the game over screen
         private SpriteFont spriteFont;
 
+        public bool slamAnimationPlayed;
+        public BoundingCircle SlamHitBox;
+        private double slamTimer;
+
         /// <summary>
         /// constructor for boss object
         /// </summary>
@@ -109,17 +117,19 @@ namespace TrashBash
         {
             arrowWarning = content.Load<Texture2D>("warningArrow");
             arrowWarningUp = content.Load<Texture2D>("warningArrowUp");
+            warningCircle = content.Load<Texture2D>("WarningCircle");
             texture = content.Load<Texture2D>("ratBossSheet");
             healthEmpty = content.Load<Texture2D>("healthEmpty");
             healthFull = content.Load<Texture2D>("healthFull");
             spriteFont = content.Load<SpriteFont>("arial");
+            test = content.Load<Texture2D>("EnemyProjectile");
             //hitSound = content.Load<SoundEffect>("raccoonHit");
             source = new Rectangle(0 * 160, 0 * 160, 160, 160);
         }
 
         public void Update(GameTime gameTime, PlayerController player)
         {
-            if(!Dead)
+            if (!Dead)
             {
                 if (actionState == state.idle || actionState == state.moveLeft || actionState == state.moveRight)
                 {
@@ -132,11 +142,11 @@ namespace TrashBash
 
                 if (!attacking)
                 {
-                    if (attackTimer > 6)
+                    if (attackTimer > 5)
                     {
-                        int temp = RandomHelper.Next(3, 3);
+                        int temp = RandomHelper.Next(3, 5);
                         actionState = (state)temp;
-                        attackTimer -= 6;
+                        attackTimer -= 5;
                     }
                     else if (player.Position.X + 30 <= Position.X + 120 && player.Position.X + 30 >= Position.X + 40)
                     {
@@ -178,7 +188,7 @@ namespace TrashBash
                             {
                                 if (Position.Y + 160 < 725)
                                 {
-                                    Position.Y += 3 * moveSpeed;
+                                    Position.Y += 5 * moveSpeed;
                                     if (Position.Y + 160 >= 725)
                                     {
                                         actionState = state.idle;
@@ -192,7 +202,7 @@ namespace TrashBash
                             {
                                 if (Position.Y > 30)
                                 {
-                                    Position.Y -= 3 * moveSpeed;
+                                    Position.Y -= 5 * moveSpeed;
                                     if (Position.Y <= 30)
                                     {
                                         actionState = state.idle;
@@ -202,6 +212,13 @@ namespace TrashBash
                                     }
                                 }
                             }
+                        }
+                    }
+                    else if (actionState == state.slam)
+                    {
+                        if (slamAnimationPlayed)
+                        {
+                            SlamHitBox = new BoundingCircle(Position + new Vector2(80, 80), 500);
                         }
                     }
                 }
@@ -252,9 +269,9 @@ namespace TrashBash
             {
                 bounds = new BoundingCircle(Vector2.Zero, 0);
 
-                
+
             }
-            
+
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -292,16 +309,16 @@ namespace TrashBash
 
             if (actionState == state.idle)
             {
-                if(animationTimer > .4)
+                if (animationTimer > .4)
                 {
 
                     AnimationFrame++;
 
-                    if(AnimationFrame > 1)
+                    if (AnimationFrame > 1)
                     {
                         AnimationFrame = 0;
                     }
-                    if(top)
+                    if (top)
                     {
                         source = new Rectangle(AnimationFrame * 160, 0 * 160, 160, 160);
                     }
@@ -309,11 +326,11 @@ namespace TrashBash
                     {
                         source = new Rectangle(AnimationFrame * 160, 5 * 160, 160, 160);
                     }
-                    
+
                     animationTimer -= .4;
                 }
             }
-            else if(actionState == state.moveRight)
+            else if (actionState == state.moveRight)
             {
                 if (animationTimer > .1)
                 {
@@ -324,7 +341,7 @@ namespace TrashBash
                         AnimationFrame = 0;
                     }
 
-                    if(top)
+                    if (top)
                     {
                         source = new Rectangle(AnimationFrame * 160, 1 * 160, 160, 160);
                     }
@@ -334,7 +351,7 @@ namespace TrashBash
                     }
                     animationTimer -= .1;
                 }
-                
+
             }
             else if (actionState == state.moveLeft)
             {
@@ -358,7 +375,7 @@ namespace TrashBash
 
                     animationTimer -= .1;
                 }
-                
+
             }
             else if (actionState == state.charge)
             {
@@ -373,10 +390,10 @@ namespace TrashBash
                         AnimationFrame = 2;
                         stall += .6;
                     }
-                    
-                    if(stall >= .6)
+
+                    if (stall >= .6)
                     {
-                        if(AnimationFrame > 1)
+                        if (AnimationFrame > 1)
                         {
                             AnimationFrame = 0;
                         }
@@ -401,21 +418,55 @@ namespace TrashBash
 
 
 
-                   animationTimer -= .6;
+                    animationTimer -= .6;
                 }
 
-                if(top)
+                if (top)
                 {
-                    spriteBatch.Draw(arrowWarning, Position + new Vector2(40, 160), Color);
+                    spriteBatch.Draw(arrowWarning, Position + new Vector2(40, 160), Color.White);
                 }
                 else
                 {
-                    spriteBatch.Draw(arrowWarningUp, Position + new Vector2(40, -160), Color);
+                    spriteBatch.Draw(arrowWarningUp, Position + new Vector2(40, -160), Color.White);
                 }
-                
-            }
 
-            spriteBatch.Draw(texture, Position, source, Color);
+            }
+            else if (actionState == state.slam)
+            {
+                if (animationTimer > .3)
+                {
+
+                    AnimationFrame++;
+
+                    if (AnimationFrame > 7)
+                    {
+                        slamAnimationPlayed = true;
+                        AnimationFrame = 7;
+                        slamTimer++;
+                    }
+
+                    if(slamTimer > 2)
+                    {
+                        actionState = state.idle;
+                        slamAnimationPlayed = false;
+                        slamTimer = 0;
+                        SlamHitBox = new BoundingCircle();
+                    }
+
+                    if (top)
+                    {
+                        source = new Rectangle(AnimationFrame * 160, 10 * 160, 160, 160);
+                    }
+                    else
+                    {
+                        source = new Rectangle(AnimationFrame * 160, 10 * 160, 160, 160);
+                    }
+
+                    animationTimer -= .3;
+                }
+                spriteBatch.Draw(warningCircle, Position - new Vector2(420, 420), Color.White);
+            }
+                spriteBatch.Draw(texture, Position, source, Color);
+        }
         }
     }
-}

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -9,9 +12,11 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
 
+
+
 namespace TrashBash
 {
-    public class HealthPickup
+    public class ItemPickup
     {
         //the health pickup texture and animation variables
         private Texture2D texture;
@@ -43,18 +48,22 @@ namespace TrashBash
 
         private bool goingDown = false;
 
+        private int type = RandomHelper.Next(2);
+        private string description;
+
         /// <summary>
         /// constructor for health pickup object
         /// </summary>
         /// <param name="position">pickup spawn position</param>
         /// <param name="content">games content manager</param>
-        public HealthPickup(Vector2 position, ContentManager content, float level)
+        public ItemPickup(Vector2 position, ContentManager content, float level)
         {
             this.Position = position;
             this.startPosition = position;
             this.bounds = new BoundingRectangle(position, 48, 48);
             this.Level = level;
             LoadContent(content);
+
         }
 
         /// <summary>
@@ -63,7 +72,21 @@ namespace TrashBash
         /// <param name="content"></param>
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("HealthPickup");
+            if(type == 0)
+            {
+                texture = content.Load<Texture2D>("Items/ExtraFirepowerItem");
+                description = "Extra Firepower\n" +
+                              "_____________\n" +
+                              "  Damage + 0.5    ";
+            }
+            else if(type == 1)
+            {
+                texture = content.Load<Texture2D>("Items/NewBootsItem");
+                description = "New Boots\n" +
+                              "_____________\n" +
+                              "  Speed + 1    ";
+            }
+            
             spriteFont = content.Load<SpriteFont>("arial");
             //hitSound = content.Load<SoundEffect>("raccoonHit");
         }
@@ -75,7 +98,7 @@ namespace TrashBash
         /// <param name="player">player object</param>
         public void Update(GameTime gameTime, PlayerController player)
         {
-            if(player.Bounds.CollidesWith(bounds) && Level == 0)
+            if (player.Bounds.CollidesWith(bounds))
             {
                 displayText = true;
             }
@@ -84,15 +107,15 @@ namespace TrashBash
                 displayText = false;
             }
 
-            if(Position.Y < startPosition.Y - 5)
+            if (Position.Y < startPosition.Y - 5)
             {
                 goingDown = true;
             }
 
-            if(goingDown)
+            if (goingDown)
             {
                 Position.Y += 0.1f;
-                if(Position.Y == startPosition.Y)
+                if (Position.Y == startPosition.Y)
                 {
                     goingDown = false;
                 }
@@ -100,6 +123,18 @@ namespace TrashBash
             else
             {
                 Position.Y -= 0.1f;
+            }
+        }
+
+        public void Pickup(PlayerController player)
+        {
+            if(type == 0)
+            {
+                player.ProjDmg += 0.5f;
+            }
+            if(type == 1)
+            {
+                player.MovementSpeed += 1;
             }
         }
 
@@ -125,9 +160,9 @@ namespace TrashBash
                 animationTimer -= 0.3;
             }
 
-            if(displayText && Level == 0)
+            if (displayText && Level == 0)
             {
-                spriteBatch.DrawString(spriteFont, "Space to Pickup\nHeals the Player", Position - new Vector2(65,50), Color.White);
+                spriteBatch.DrawString(spriteFont, description, Position + new Vector2(65, -20), Color.White);
             }
 
             var source = new Rectangle(AnimationFrame * 48, 0, 48, 48);
@@ -135,3 +170,4 @@ namespace TrashBash
         }
     }
 }
+

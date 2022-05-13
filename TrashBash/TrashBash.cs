@@ -86,6 +86,10 @@ namespace TrashBash
         public List<HealthPickup> healthPickups = new List<HealthPickup>();
         public List<HealthPickup> hpPickedUp = new List<HealthPickup>();
 
+        //list of Item pickups
+        public List<ItemPickup> ItemPickups = new List<ItemPickup>();
+        public List<ItemPickup> ItemPickedUp = new List<ItemPickup>();
+
         //list of gates
         private List<GateTop> gateTops = new List<GateTop>();
 
@@ -246,6 +250,8 @@ namespace TrashBash
                     trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, levelIndex));
                     healthPickups.Add(new HealthPickup(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content, levelIndex));
                 }
+
+                ItemPickups.Add(new ItemPickup(new Vector2(300, 300), Content, levelIndex));
 
                 //walls
                 #region
@@ -1340,6 +1346,30 @@ namespace TrashBash
             hpPickedUp.Clear();
             #endregion
 
+            //item pickup update logic
+            #region
+            foreach (ItemPickup item in ItemPickups)
+            {
+                if (item.Level == (float)gameState)
+                {
+                    item.Update(gameTime, player);
+
+                    if (player.Bounds.CollidesWith(item.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                    {
+                        item.Pickup(player);
+                        ItemPickedUp.Add(item);
+                    }
+                }
+            }
+
+            foreach (ItemPickup item in ItemPickedUp)
+            {
+                ItemPickups.Remove(item);
+            }
+
+            hpPickedUp.Clear();
+            #endregion
+
             //wall collisions
             #region
             foreach (Wall wall in walls)
@@ -1432,7 +1462,7 @@ namespace TrashBash
 
                 if (player.Hit == false)
                 {
-                    if (player.Bounds.CollidesWith(RatBoss.Bounds))
+                    if (player.CenterBounds.CollidesWith(RatBoss.Bounds) || player.CenterBounds.CollidesWith(RatBoss.SlamHitBox))
                     {
                         player.Hit = true;
                         player.PlayerCurrentHealth--;
@@ -1441,6 +1471,7 @@ namespace TrashBash
                         shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
                         player.Position = player.LastMove;
                     }
+
                 }
 
                 if(RatBoss.CurrentHealth <= 0)
@@ -1448,6 +1479,11 @@ namespace TrashBash
                     RatBoss.Dead = true;
                 }
 
+                if(RatBoss.slamAnimationPlayed)
+                {
+                    shakeViewport = true;
+                    shakeStart = (float)gameTime.TotalGameTime.TotalSeconds;
+                }
             }
 
             
@@ -1734,6 +1770,14 @@ namespace TrashBash
                     if (hp.Level == levelIndex)
                     {
                         hp.Draw(gameTime, _spriteBatch);
+                    }
+                }
+
+                foreach (ItemPickup item in ItemPickups)
+                {
+                    if (item.Level == levelIndex)
+                    {
+                        item.Draw(gameTime, _spriteBatch);
                     }
                 }
 
