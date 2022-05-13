@@ -46,7 +46,7 @@ namespace TrashBash
 
         //the spiders default health. Starting at 2 initially but may increase once items are added into the game,
         //may also have this scale based on lvl
-        public double Health = 6;
+        public double Health = 5;
 
         //bool gets set to true when the spider health drops to 0
         public bool Dead = false;

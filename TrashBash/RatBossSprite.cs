@@ -55,7 +55,7 @@ namespace TrashBash
 
         //the boss default health. Starting at 30 initially but may increase once items are added into the game,
         //may also have this scale based on lvl
-        private double maxHealth = 60;
+        private double maxHealth = 100;
         public double CurrentHealth;
 
         //bool gets set to true when the boss health drops to 0
@@ -63,7 +63,7 @@ namespace TrashBash
         private bool deathAnimationPlayed = false;
 
         //boss move speed
-        private float moveSpeed = 3f;
+        private float moveSpeed = 3.2f;
 
         //used to keep track of the boss invulnerability frames after being hit. May remove later so that higher fire rate feels good
         private double iFrameTimer = 0;
@@ -279,7 +279,7 @@ namespace TrashBash
             //draw the hud (grows and shrinks based on the player's stats
             double full = CurrentHealth;
             double empty = maxHealth;
-            Vector2 currentPos = new Vector2(400, 720);
+            Vector2 currentPos = new Vector2(175, 720);
             //draw the max health with lower opacity cans
             while (empty > 0)
             {
@@ -292,7 +292,7 @@ namespace TrashBash
             }
 
             //draw the current health with full and half cans over top of that
-            currentPos = new Vector2(400, 720);
+            currentPos = new Vector2(175, 720);
             while (full > 0)
             {
                 if (full > 0)
@@ -303,7 +303,7 @@ namespace TrashBash
                 }
             }
 
-            spriteBatch.DrawString(spriteFont, $"Rat Boss      {CurrentHealth}/{maxHealth}", new Vector2(400, 720), Color.White);
+            spriteBatch.DrawString(spriteFont, $"Rat Boss      {CurrentHealth}/{maxHealth}", new Vector2(190, 720), Color.White);
 
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 

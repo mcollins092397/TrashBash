@@ -17,7 +17,8 @@ namespace TrashBash
         Level2 = 2,
         Level3 = 3,
         Level4 = 4,
-        RatBoss = 97,
+        RatBoss = 96,
+        GameOverWin = 97,
         GameOver = 98,
         MainMenu = 99
 
@@ -114,11 +115,19 @@ namespace TrashBash
         public int[,] Grid = new int[77,137];
         AStarPathfinder pathfinder;
 
+        private bool showControls = true;
+        private Texture2D controlScreen;
+        private double startGameTimer;
+
+        private bool choosingItem = true;
+
+        private double bossDeadTimer;
+
         private Texture2D test;
         public TrashBash()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
             _graphics.PreferredBackBufferWidth = 1366;
@@ -132,7 +141,7 @@ namespace TrashBash
         protected override void Initialize()
         {
             //initialize the player object and have their starting location default to center screen 
-            player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -32, (GraphicsDevice.Viewport.Height / 2)) };
+            player = new PlayerController() { Position = new Vector2((GraphicsDevice.Viewport.Width / 2) -120, (GraphicsDevice.Viewport.Height / 2)) };
 
             //initialize the buttons for the main menu
             playBtn = new PlayBtn(new Vector2((GraphicsDevice.Viewport.Width / 4) - 80, GraphicsDevice.Viewport.Height / 2));
@@ -248,10 +257,13 @@ namespace TrashBash
                     trashBags.Add(new TrashBagSprite(new Vector2(1310, 105), Content, levelIndex));
                     trashBags.Add(new TrashBagSprite(new Vector2(1310, 75), Content, levelIndex));
                     trashBags.Add(new TrashBagSprite(new Vector2(1285, 75), Content, levelIndex));
-                    healthPickups.Add(new HealthPickup(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content, levelIndex));
+
+                    ItemPickups.Add(new ItemPickup(new Vector2(360, 300), Content, levelIndex, 0));
+                    ItemPickups.Add(new ItemPickup(new Vector2(660, 300), Content, levelIndex, 1));
+                    ItemPickups.Add(new ItemPickup(new Vector2(960, 300), Content, levelIndex, 2));
                 }
 
-                ItemPickups.Add(new ItemPickup(new Vector2(300, 300), Content, levelIndex));
+                
 
                 //walls
                 #region
@@ -605,9 +617,37 @@ namespace TrashBash
                     livingRaccoons.Add(new RaccoonSprite(new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2)), Content));
                 }
 
+                if (!loaded)
+                {
+                    trashBags.Add(new TrashBagSprite(new Vector2(210, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(235, 445), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(260, 420), Content, levelIndex));
+
+                    trashBags.Add(new TrashBagSprite(new Vector2(1100, 475), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1100, 425), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1100, 450), Content, levelIndex));
+
+                    //form left side wall of bags
+                    trashBags.Add(new TrashBagSprite(new Vector2(100, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(125, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(150, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(75, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(50, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(25, 270), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(0, 270), Content, levelIndex));
+
+                    //form right side wall of bags
+                    trashBags.Add(new TrashBagSprite(new Vector2(1300, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1275, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1250, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1225, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1200, 470), Content, levelIndex));
+                    trashBags.Add(new TrashBagSprite(new Vector2(1175, 470), Content, levelIndex));
+                }
+
                 //walls
                 #region
-                
+
                 walls.Add(new Wall(new Vector2(490, 470), Content, 6));
                 walls.Add(new Wall(new Vector2(520, 470), Content, 1));
                 walls.Add(new Wall(new Vector2(550, 470), Content, 1));
@@ -761,6 +801,113 @@ namespace TrashBash
                     livingRaccoons.Add(new RaccoonSprite(new Vector2(1270, 670), Content));
                 }
 
+                //walls
+                #region
+                //top wall
+                
+                
+                walls.Add(new Wall(new Vector2(185, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(215, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(245, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(275, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(305, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(335, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(365, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(395, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(425, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(455, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(485, 205), Content, 1));
+               
+               
+                walls.Add(new Wall(new Vector2(845, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(875, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(905, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(935, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(965, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(995, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(1025, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(1055, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(1085, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(1115, 205), Content, 1));
+                walls.Add(new Wall(new Vector2(1145, 205), Content, 1));
+                
+               
+
+                //right side wall
+                walls.Add(new Wall(new Vector2(845, 35), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 65), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 95), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 125), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 155), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 185), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 215), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 245), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 275), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 305), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 335), Content, 3));
+                
+                walls.Add(new Wall(new Vector2(845, 485), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 515), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 545), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 575), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 605), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 635), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 665), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 695), Content, 3));
+                walls.Add(new Wall(new Vector2(845, 725), Content, 4));
+
+                //left side wall
+                walls.Add(new Wall(new Vector2(485, 35), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 65), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 95), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 125), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 155), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 185), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 215), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 245), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 275), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 305), Content, 3));
+                
+                walls.Add(new Wall(new Vector2(485, 455), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 485), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 515), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 545), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 575), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 605), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 635), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 665), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 695), Content, 3));
+                walls.Add(new Wall(new Vector2(485, 725), Content, 6));
+
+                //Bottom Wall
+                
+                walls.Add(new Wall(new Vector2(185, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(215, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(245, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(275, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(305, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(335, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(365, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(395, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(425, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(455, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(485, 625), Content, 1));
+                          
+                
+                walls.Add(new Wall(new Vector2(845, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(875, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(905, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(935, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(965, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(995, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(1025, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(1055, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(1085, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(1115, 625), Content, 1));
+                walls.Add(new Wall(new Vector2(1145, 625), Content, 1));
+                
+                #endregion
+
                 gameState = State.Level3;
             }
             #endregion
@@ -828,7 +975,7 @@ namespace TrashBash
                 RatBoss = new RatBossSprite(new Vector2(615, 30), Content);
 
                 //walls
-
+                #region
                 //top wall
                 walls.Add(new Wall(new Vector2(5, 5), Content, 0));
                 walls.Add(new Wall(new Vector2(35, 5), Content, 1));
@@ -973,7 +1120,7 @@ namespace TrashBash
                 walls.Add(new Wall(new Vector2(1265, 725), Content, 1));
                 walls.Add(new Wall(new Vector2(1295, 725), Content, 1));
                 walls.Add(new Wall(new Vector2(1325, 725), Content, 2));
-
+                #endregion
 
                 gameState = State.RatBoss;
             }
@@ -1097,7 +1244,9 @@ namespace TrashBash
 
             //the persistant background(may add more or different color versions later)
             background = Content.Load<Texture2D>("background");
-            
+
+            controlScreen = Content.Load<Texture2D>("Controls");
+
             //load music content and set its volume
             bossMusic = Content.Load<Song>("heavy_metal_looping");
             MediaPlayer.IsRepeating = true;
@@ -1182,7 +1331,7 @@ namespace TrashBash
             {
                 if (player.Bounds.CollidesWith(gate.Bounds))
                 {
-                    //player.Position = player.LastMove;
+                    player.Position = player.LastMove;
                 }
                 foreach (PlayerProjectile proj in player.PlayerProjectile)
                 {
@@ -1248,6 +1397,10 @@ namespace TrashBash
                         if(RandomHelper.Next(0, 25) == 0)
                         {
                             healthPickups.Add(new HealthPickup(spider.Position, Content, levelIndex));
+                        }
+                        else if (RandomHelper.Next(0, 50) == 0)
+                        {
+                            ItemPickups.Add(new ItemPickup(spider.Position, Content, levelIndex, null));
                         }
                         deadSpiders.Add(spider);
                         
@@ -1358,6 +1511,16 @@ namespace TrashBash
                     {
                         item.Pickup(player);
                         ItemPickedUp.Add(item);
+
+                        if(gameState == State.Level0)
+                        {
+                            foreach(ItemPickup i in ItemPickups)
+                            {
+                                ItemPickedUp.Add(i);
+                            }
+                            choosingItem = false;
+                        }
+
                     }
                 }
             }
@@ -1401,6 +1564,10 @@ namespace TrashBash
                     {
                         healthPickups.Add(new HealthPickup(raccoon.Position, Content, levelIndex));
                     }
+                    else if (RandomHelper.Next(0, 50) == 0)
+                    {
+                        ItemPickups.Add(new ItemPickup(raccoon.Position, Content, levelIndex, null));
+                    }
                 }
 
                 if(player.CenterBounds.CollidesWith(raccoon.ThrowingBounds))
@@ -1440,17 +1607,30 @@ namespace TrashBash
             {
                 playBtn.Color = Color.White;
 
-                if (player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                if(!showControls)
                 {
-                    playBtn.Color = Color.Red;
-                    //player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2));
-                    InitializeLevelX((State)levelList[0].LevelNum, levelList[0].Cleared, levelList[0].Shop, levelList[0].ItemRoom, levelList[0].Loaded);
-                    levelList[0].Loaded = true;
+                    startGameTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                    if (startGameTimer > .5 && player.Bounds.CollidesWith(playBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                    {
+                        playBtn.Color = Color.Red;
+                        //player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 32, (GraphicsDevice.Viewport.Height / 2));
+                        InitializeLevelX((State)levelList[0].LevelNum, levelList[0].Cleared, levelList[0].Shop, levelList[0].ItemRoom, levelList[0].Loaded);
+                        levelList[0].Loaded = true;
+                    }
+                    if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                    {
+                        Exit();
+                    }
                 }
-                if (player.Bounds.CollidesWith(exitBtn.Bounds) && (Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
+                else
                 {
-                    Exit();
+                    if(Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed)
+                    {
+                        showControls = false;
+                    }
                 }
+
+                
             }
             #endregion
 
@@ -1477,6 +1657,12 @@ namespace TrashBash
                 if(RatBoss.CurrentHealth <= 0)
                 {
                     RatBoss.Dead = true;
+                    bossDeadTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if(bossDeadTimer > 1.5)
+                    {
+                        gameState = State.GameOverWin;
+                    }
                 }
 
                 if(RatBoss.slamAnimationPlayed)
@@ -1559,7 +1745,7 @@ namespace TrashBash
 
             //update logic for game over screen
             #region
-            if (gameState == State.GameOver)
+            if (gameState == State.GameOver || gameState == State.GameOverWin)
             {
                 if ((Keyboard.GetState().IsKeyDown(Keys.Space) || GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed))
                 {
@@ -1567,6 +1753,10 @@ namespace TrashBash
                     player.Position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, (GraphicsDevice.Viewport.Height / 2) - 30);
                     player.PlayerCurrentHealth = player.PlayerMaxHealth;
                     player.ProjFireRate = .75f;
+                    player.ProjSpeed = 3;
+                    player.ProjDmg = 1;
+                    player.ProjRange = 250;
+                    player.MovementSpeed = 3f;
                     levelIndex = 0;
 
                     for(int i = 0; i < levelList.Count; i++)
@@ -1620,15 +1810,22 @@ namespace TrashBash
             //if state is main menu draw main menu content
             if (gameState == State.MainMenu)
             {
+                
+
                 _spriteBatch.Draw(title, new Vector2(70, 20), Color.White);
                 playBtn.Draw(gameTime, _spriteBatch);
                 exitBtn.Draw(gameTime, _spriteBatch);
-                _spriteBatch.DrawString(spriteFont, "             WASD/Left stick to Move \n                 Space/A to interact\n         Arrow keys/Right stick to shoot\nEsc/Back or interact with Exit button to quit", new Vector2((GraphicsDevice.Viewport.Width /2 - 225), GraphicsDevice.Viewport.Height - 125), Color.White);
+                
+                if(showControls)
+                {
+                    _spriteBatch.Draw(controlScreen, Vector2.Zero, Color.White);
+                }
+
                 player.Draw(gameTime, _spriteBatch);
             }
 
             //otherwise go through the lists of gameplay objects and draw them to the screen
-            if(gameState != State.MainMenu && gameState != State.GameOver)
+            if(gameState != State.MainMenu && gameState != State.GameOver && gameState != State.GameOverWin)
             {
 
                 //default background
@@ -1793,6 +1990,16 @@ namespace TrashBash
             if(gameState == State.GameOver)
             {
                 _spriteBatch.DrawString(spriteFont, "          GAME OVER\n   Esc/Back button to exit\nPress Space or A to restart", new Vector2((GraphicsDevice.Viewport.Width / 2) - 140, (GraphicsDevice.Viewport.Height / 2) - 30), Color.White);
+            }
+
+            if (gameState == State.GameOverWin)
+            {
+                _spriteBatch.DrawString(spriteFont, "            You WIN!\n   Esc/Back button to exit\nPress Space or A to restart", new Vector2((GraphicsDevice.Viewport.Width / 2) - 140, (GraphicsDevice.Viewport.Height / 2) - 30), Color.White);
+            }
+
+            if (gameState == State.Level0 && choosingItem)
+            {
+                _spriteBatch.DrawString(spriteFont, "Choose Starting Item!", new Vector2(450, 200), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0);
             }
 
             //end of spritebatch draws

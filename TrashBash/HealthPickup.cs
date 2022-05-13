@@ -75,7 +75,7 @@ namespace TrashBash
         /// <param name="player">player object</param>
         public void Update(GameTime gameTime, PlayerController player)
         {
-            if(player.Bounds.CollidesWith(bounds) && Level == 0)
+            if(player.Bounds.CollidesWith(bounds))
             {
                 displayText = true;
             }
@@ -125,7 +125,7 @@ namespace TrashBash
                 animationTimer -= 0.3;
             }
 
-            if(displayText && Level == 0)
+            if(displayText)
             {
                 spriteBatch.DrawString(spriteFont, "Space to Pickup\nHeals the Player", Position - new Vector2(65,50), Color.White);
             }

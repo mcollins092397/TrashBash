@@ -48,7 +48,7 @@ namespace TrashBash
 
         private bool goingDown = false;
 
-        private int type = RandomHelper.Next(2);
+        private int type = RandomHelper.Next(3);
         private string description;
 
         /// <summary>
@@ -56,12 +56,16 @@ namespace TrashBash
         /// </summary>
         /// <param name="position">pickup spawn position</param>
         /// <param name="content">games content manager</param>
-        public ItemPickup(Vector2 position, ContentManager content, float level)
+        public ItemPickup(Vector2 position, ContentManager content, float level, int? type)
         {
             this.Position = position;
             this.startPosition = position;
             this.bounds = new BoundingRectangle(position, 48, 48);
             this.Level = level;
+            if(type != null)
+            {
+                this.type = (int)type;
+            }
             LoadContent(content);
 
         }
@@ -85,6 +89,14 @@ namespace TrashBash
                 description = "New Boots\n" +
                               "_____________\n" +
                               "  Speed + 1    ";
+            }
+            else if(type ==2)
+            {
+                texture = content.Load<Texture2D>("Items/RocketPropelledBulletItem");
+                description = "Rocket Propelled Bullets\n" +
+                              "_____________\n" +
+                              " Projectile Speed + 2\n" +
+                              " Projectile Range + 1";
             }
             
             spriteFont = content.Load<SpriteFont>("arial");
@@ -132,9 +144,14 @@ namespace TrashBash
             {
                 player.ProjDmg += 0.5f;
             }
-            if(type == 1)
+            else if(type == 1)
             {
                 player.MovementSpeed += 1;
+            }
+            else if (type == 2)
+            {
+                player.ProjSpeed += 2;
+                player.ProjRange += 100;
             }
         }
 
@@ -160,7 +177,7 @@ namespace TrashBash
                 animationTimer -= 0.3;
             }
 
-            if (displayText && Level == 0)
+            if (displayText)
             {
                 spriteBatch.DrawString(spriteFont, description, Position + new Vector2(65, -20), Color.White);
             }
